@@ -1,382 +1,1202 @@
-{% extends "base.html" %} {% load static %} {% block style %} <link
-rel="stylesheet" href="{% static "css/style.css" %}"> <link rel="stylesheet"
-href="{% static "vendor/bootstrap.css" %}">
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-/>
+
+{% extends "base.html" %} 
+{% load static %} 
+
+{% block style %} 
+<link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+<link rel="stylesheet" href="{% static 'vendor/bootstrap.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-{% endblock style %} {% block content %}
-<div class="swiper swiper2 w-full h-full">
+<style>
+  /* ================= ANIMASI KABALMON ================= */
+  @keyframes floatKabalmon {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+    100% { transform: translateY(0px); }
+  }
+
+  @keyframes pulseRing {
+    0% { transform: scale(0.95); opacity: 0.6; }
+    70% { transform: scale(1.1); opacity: 0; }
+    100% { transform: scale(1.1); opacity: 0; }
+  }
+
+  @keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(-40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .kabalmon-float { animation: floatKabalmon 4s ease-in-out infinite; }
+  .fade-in-left { animation: fadeInLeft 1s ease-out forwards; }
+  .fade-in-right { animation: fadeInRight 1s ease-out forwards; }
+
+  @media (max-width: 1024px) {
+    .kabalmon-float { animation-duration: 5s; }
+  }
+
+  @media (max-width: 768px) {
+    .kabalmon-float { animation-duration: 6s; }
+  }
+
+  .kabalmon-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .kabalmon-wrapper::before {
+    content: "";
+    position: absolute;
+    width: 85%;
+    height: 85%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,176,236,0.35) 0%, rgba(0,176,236,0) 70%);
+    animation: pulseRing 2.5s ease-out infinite;
+    z-index: 0;
+  }
+
+  @media (max-width: 640px) {
+    .sambutan-text { text-align: left; padding: 0 4px; }
+    .sambutan-text h1 { font-size: 1.35rem; line-height: 1.3; }
+    .sambutan-text h3 { font-size: 1rem; line-height: 1.4; }
+    .sambutan-text p { font-size: 0.875rem; line-height: 1.6; }
+  }
+
+  /* ================= TICKER PENGUMUMAN ================= */
+  .ticker-wrap {
+    background: #00b5f1;
+    color: #fff;
+    padding: 8px 0;
+    overflow: hidden;
+  }
+
+  .ticker-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+  }
+
+  .ticker-label {
+    background: #003c69;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+
+  .ticker-content {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .ticker-content span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: tickerScroll 25s linear infinite;
+  }
+
+  @keyframes tickerScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* ================= LAYANAN CEPAT ================= */
+  .layanan-card {
+    background: #f0f7fc;
+    border-radius: 14px;
+    padding: 22px 14px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 1px solid transparent;
+  }
+
+  .layanan-card:hover {
+    background: #003c69;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 22px rgba(0,60,105,0.2);
+    border-color: #00b5f1;
+  }
+
+  .layanan-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #00b5f1;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin: 0 auto 12px;
+    transition: transform 0.3s ease;
+  }
+
+  .layanan-card:hover .layanan-icon {
+    transform: scale(1.1);
+    background: #00d4ff;
+  }
+
+  .layanan-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #003c69;
+    transition: color 0.3s ease;
+  }
+
+  .layanan-card:hover .layanan-title {
+    color: #fff;
+  }
+
+  @media (min-width: 768px) {
+    .layanan-title { font-size: 0.95rem; }
+    .layanan-icon { width: 60px; height: 60px; font-size: 22px; }
+  }
+
+  /* ================= PETA ================= */
+  #map { z-index: 0; }
+
+  /* ================= INSTAGRAM EMBED ================= */
+
+  .igPostSwiper {
+    width: 100%;
+    max-width: 1100px;
+    overflow: hidden;
+    margin: 0 auto;
+    padding: 12px 5px 20px;
+  }
+
+  .igPostSwiper .swiper-slide {
+    height: auto;
+  }
+
+  .ig-post-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 3px 12px rgba(0,60,105,0.10);
+    height: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    overflow: hidden;
+    animation: igFloat 3s ease-in-out infinite;
+    transition: box-shadow 0.3s ease;
+  }
+
+  /* Animasi naik turun */
+  @keyframes igFloat {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-9px);
+    }
+  }
+
+  /* Animasi setiap postingan berbeda */
+  .ig-post-card:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .ig-post-card:nth-child(2) {
+    animation-delay: 0.5s;
+  }
+
+  .ig-post-card:nth-child(3) {
+    animation-delay: 1s;
+  }
+
+  .ig-post-card:hover {
+    animation-play-state: paused;
+    box-shadow: 0 8px 20px rgba(0,60,105,0.18);
+  }
+
+  .ig-post-card .instagram-media {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  .ig-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .ig-pagination .swiper-pagination-bullet {
+    background: #003c69;
+    opacity: 0.4;
+  }
+
+  .ig-pagination .swiper-pagination-bullet-active {
+    background: #00b5f1;
+    opacity: 1;
+  }
+
+  .ig-prev,
+  .ig-next {
+    background: #003c69;
+    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    transition: 0.3s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .ig-prev:hover,
+  .ig-next:hover {
+    background: #00b5f1;
+  }
+
+  @media (max-width: 640px) {
+    .ig-post-card {
+      padding: 6px;
+      max-width: 340px;
+    }
+
+    .igPostSwiper {
+      padding: 10px 0 18px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ig-post-card {
+      animation: none;
+    }
+  }
+
+</style>
+{% endblock style %} 
+
+
+{% block content %}
+
+<!-- ================= 1. BANNER SLIDER ================= -->
+<div class="swiper swiper2 w-full h-auto">
   <div class="swiper-wrapper">
     {% for banner in gambar %}
     <div class="swiper-slide">
-      <img src="{{banner.image.url}}" alt="" class="w-full h-[550px]" />
+      <img src="{{banner.image.url}}" alt="Banner" class="w-full object-cover h-[250px] md:h-[450px] lg:h-[550px]" />
     </div>
     {% endfor %}
   </div>
-  <div class="swiper-button-next"></div>
-  <div class="swiper-button-prev"></div>
+
+  <div class="swiper-button-next hidden md:flex"></div>
+  <div class="swiper-button-prev hidden md:flex"></div>
   <div class="swiper-pagination"></div>
 </div>
 
-<div
-  id="tentang-kami"
-  class="bg-[#003c69] lg:flex lg:p-[80px] md:p-[80px] p-[50px]"
->
-  <div class="logo lg:flex lg:items-center md:flex md:items-center">
-    <img src="{% static "img/kabalmon.png" %}" class=" w-[800px] ml-[-50px]">
+
+<!-- ================= 2. TICKER PENGUMUMAN ================= -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-label">
+      <i class="fa-solid fa-bullhorn mr-1"></i> INFO
+    </span>
+
+    <div class="ticker-content">
+      <span>
+        Selamat datang di website resmi Balmon SFR Kelas I Mataram •
+        Layanan perizinan frekuensi radio dibuka Senin–Jumat pukul 08.00–16.00 WITA •
+        Hubungi kami untuk konsultasi dan pengaduan gangguan frekuensi
+      </span>
+    </div>
   </div>
-  <div class="text lg:my-auto text-[#00b0ec] ml-[-50px]">
-    <h1 class="text-[#00b0ec]">Sambutan Kepala</h1>
-    <h3 class="text-[#00b0ec]">
+</div>
+
+
+<!-- ================= 3. SAMBUTAN KEPALA ================= -->
+<div id="tentang-kami" class="bg-[#003c69] lg:flex lg:p-[80px] md:p-[80px] p-[30px] items-center gap-10 overflow-hidden">
+
+  <div class="logo lg:w-1/3 w-full flex justify-center mb-8 lg:mb-0 fade-in-left">
+    <div class="kabalmon-wrapper">
+      <img src="{% static 'img/kabalmon.png' %}"
+           class="kabalmon-float w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] object-contain relative z-10 drop-shadow-2xl"
+           alt="Kepala Balmon">
+    </div>
+  </div>
+
+  <div class="text lg:w-2/3 w-full text-[#00b0ec] sambutan-text fade-in-right">
+
+    <h1 class="text-2xl md:text-3xl font-bold text-[#00b0ec]">
+      Sambutan Kepala
+    </h1>
+
+    <h3 class="text-lg md:text-xl font-semibold text-[#00b0ec] mt-2 mb-4">
       Balai Monitoring Spektrum Frekuensi Radio Kelas I Mataram
     </h3>
-    {% comment %}
-    <div class="w-[20%] h-[5px] my-[20px] mx-auto"></div>
-    {% endcomment %}
-    <p class="text-justify mx-auto text-[#fff]">
+
+    <p class="text-justify text-sm md:text-base leading-relaxed text-[#fff]">
       Balmon SFR Kelas I Mataram merupakan Unit Pelaksana Teknis di lingkungan
       Direktorat Jenderal Infrastruktur Digital (DJID), Kementerian Komunikasi
       dan Digital, yang memiliki tugas melaksanakan pengawasan dan pengendalian
       di bidang penggunaan spektrum frekuensi radio dan alat/perangkat
       telekomunikasi di wilayah Nusa Tenggara Barat.
     </p>
+
   </div>
 </div>
+
+
+<!-- ================= 4. LAYANAN CEPAT ================= -->
+<div class="bg-[#f0f7fc] py-10 md:py-14 px-4 md:px-6">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="text-center mb-8">
+      <h2 class="text-xl md:text-2xl font-bold text-[#003c69]">
+        LAYANAN CEPAT
+      </h2>
+
+      <div class="w-[50px] h-[4px] bg-[#00b5f1] mx-auto mt-2 rounded"></div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+
+      <a href="#" class="layanan-card">
+        <div class="layanan-icon">
+          <i class="fa-solid fa-file-signature"></i>
+        </div>
+        <p class="layanan-title">Perizinan</p>
+      </a>
+
+      <a href="#" class="layanan-card">
+        <div class="layanan-icon">
+          <i class="fa-solid fa-tower-broadcast"></i>
+        </div>
+        <p class="layanan-title">Monitoring</p>
+      </a>
+
+      <a href="#" class="layanan-card">
+        <div class="layanan-icon">
+          <i class="fa-solid fa-bullhorn"></i>
+        </div>
+        <p class="layanan-title">Pengaduan</p>
+      </a>
+
+      <a href="#" class="layanan-card">
+        <div class="layanan-icon">
+          <i class="fa-solid fa-circle-question"></i>
+        </div>
+        <p class="layanan-title">Konsultasi</p>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= 5. BERITA TERKINI ================= -->
+<div id="berita-terkini" class="bg-white py-10 md:py-14 px-4 md:px-6">
+
+  <div class="max-w-6xl mx-auto">
+
+    <div class="flex items-end justify-between mb-6">
+
+      <div>
+        <h2 class="text-xl md:text-2xl font-bold text-[#003c69]">
+          BERITA TERKINI
+        </h2>
+
+        <div class="w-[50px] h-[4px] bg-[#00b5f1] mt-2 rounded"></div>
+      </div>
+
+      <a href="/blog/artikel"
+         class="text-sm font-semibold text-[#00b5f1] hover:text-[#003c69] transition">
+        Lihat Semua <i class="fa-solid fa-arrow-right ml-1"></i>
+      </a>
+
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+      {% for post in postingan|slice:":3" %}
+
+      <a href="/blog/artikel/{{post.slug}}"
+         class="group bg-[#f0f7fc] rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300">
+
+        <div class="overflow-hidden">
+          <img src="{{post.image.url}}"
+               alt="{{post.title}}"
+               class="w-full h-[180px] object-cover group-hover:scale-110 duration-500">
+        </div>
+
+        <div class="p-4">
+
+          <p class="text-xs text-gray-500 mb-2">
+            <i class="fa-regular fa-calendar mr-1"></i> {{post.tanggal}}
+          </p>
+
+          <h3 class="font-bold text-[#003c69] text-base md:text-lg leading-snug line-clamp-2 group-hover:text-[#00b5f1] transition">
+            {{post.title}}
+          </h3>
+
+          <p class="text-sm text-gray-600 mt-2 line-clamp-3">
+            {{post.body}}
+          </p>
+
+        </div>
+      </a>
+
+      {% empty %}
+
+      <p class="text-gray-500 col-span-full text-center">
+        Belum ada berita.
+      </p>
+
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= 6. PARALLAX TEXT ================= -->
 <div class="parallax">
   <div class="opacity">
-    <h2>"ASN berAKHLAK"</h2>
-  </div>
-</div>
-<div id="infrastruktur" class="lg:p-[80px] p-[50px]">
-  <div class="infrastruktur-headline">
-    <h2 class="">MEDIA INFRASTRUKTUR DIGITAL</h2>
-    <div></div>
-  </div>
-  <div class="swiper mySwiper mt-4 swiper-card">
-    <div class="swiper-wrapper">
-      {% for post in postingan %}
-      <div class="swiper-slide bg-[#003c69] rounded-lg p-[20px] text-[#fff]">
-        <a href="/blog/artikel/{{post.slug}}">
-          <div class="overflow-hidden rounded-lg">
-            <img
-              src="{{post.image.url}}"
-              alt=""
-              class="h-[215px] w-full rounded-lg hover:scale-125 duration-300"
-            />
-          </div>
-        </a>
-        <a href="/blog/artikel/{{post.slug}}">
-          <h4 class="pt-[20px]">{{post.title}}</h4>
-        </a>
-        <p>{{post.tanggal}}</p>
-        <p class="h-[190px]  overflow-wrap text-justify ">{{post.body}}</p>
-      </div>
-      {% endfor %}
-    </div>
-    <div class="swiper-pagination"></div>
-  </div>
-  <div class="text-center mt-3">
-    <a href="/blog/artikel" class="">
-      <button
-        type="button"
-        class="text-[#ffffff] px-4 py-1.5 bg-[#00b5f1] rounded hover:bg-[#003c69] hover:text-[#00b5f1] duration-300 ease-in-out"
-      >
-        Cek Selengkapnya
-      </button>
-    </a>
-  </div>
-</div>
-<div id="link-terkait" class="bg-[#003c69] lg:p-[80px] p-[50px]">
-  <div class="text-[#fff]">
-    <h2 class="text-center">LINK TERKAIT</h2>
-    <div class="w-[10%] h-[5px] my-[10px] mx-auto bg-[#00b5f1] rounded"></div>
-  </div>
-  <div
-    class="grid lg:grid-cols-6 lg:grid-rows-4 lg:gap-4 md:grid-cols-6 md:grid-rows-4 md:gap-4 grid-cols-1 grid-rows-2 gap-6 pt-4"
-  >
-    <div
-      class="col-span-3 row-span-2 rounded-[20px] hover:scale-102 ease-in duration-300"
-    >
-      <a href="https://pelayanansdppi.postel.go.id/">
-        <img src="{% static "img/layanan.png" %}" alt="" class="w-[100%]
-        h-[100%] rounded-[20px]">
-      </a>
-    </div>
-    <div
-      class="col-span-3 row-span-2 rounded-[20px] hover:scale-102 ease-in duration-300"
-    >
-      <a href="https://sidia.postel.go.id/">
-        <img src="{% static "img/digital-asistant.png" %}" alt=""
-        class="w-[100%] h-[100%]" style="border-radius: 20px">
-      </a>
-    </div>
-    <div
-      class="col-span-3 row-span-2 rounded-[20px] hover:scale-102 ease-in duration-300"
-    >
-      <a href="https://www.postel.go.id/sdppi_maps/">
-        <img src="{% static "img/maps.png" %}" alt="" class="w-[100%] h-[100%]"
-        style="border-radius: 20px">
-      </a>
-    </div>
-    <div
-      class="col-span-3 row-span-2 rounded-[20px] hover:scale-102 ease-in duration-300"
-    >
-      <a href="https://ifasfest.id/">
-        <img src="{% static "img/kolaborasi.png" %}" alt="" class="w-[100%]
-        h-[100%]" style="border-radius: 20px">
-      </a>
-    </div>
-  </div>
-</div>
-<div id="publikasi" class="bg-[#00508c] lg:p-[80px] p-[50px]">
-  <div class="text-[#fff]">
-    <h2 class="text-center">PUBLIKASI</h2>
-    <div class="w-[10%] h-[5px] my-[10px] mx-auto bg-[#003c69] rounded"></div>
-  </div>
-  <div
-    class="product grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 grid-rows-2 gap-5 pt-4"
-  >
-    <div class="induk relative">
-      <div class="image-box rounded">
-        <a href="https://postel.go.id/publikasi-lakip-59">
-          <img src="{% static "img/kinerja.png" %}" alt="" width="100%"
-          height="100%" class="rounded hover:scale-102 ease-in duration-300">
-        </a>
-      </div>
-      <div class="relative lg:mt-2">
-        <div class="triangle absolute"></div>
-        <div class="product-name absolute w-full text-[#fff]">
-          <p class="bg-[#00b5f1] mt-3 px-2 py-1 text-center rounded">LAPKIN</p>
-        </div>
-      </div>
-    </div>
-    <div class="induk relative">
-      <div class="image-box rounded">
-        <a href="https://postel.go.id/publikasi-renstra-119">
-          <img src="{% static "img/tekno.png" %}" alt="" width="100%"
-          height="100%" class="rounded hover:scale-102 ease-in duration-300" >
-        </a>
-      </div>
-      <div class="relative lg:mt-2">
-        <div class="triangle absolute"></div>
-        <div class="product-name absolute w-full text-[#fff]">
-          <p class="bg-[#00b5f1] mt-3 px-2 py-1 text-center rounded">RENSTRA</p>
-        </div>
-      </div>
-    </div>
-    <div class="induk relative">
-      <div class="image-box rounded">
-        <a href="https://postel.go.id/publikasi-hasil-survei-pelayanan-publik-69">
-          <img src="{% static "img/survei.png" %}" alt="" width="100%"
-          height="100%" class="rounded hover:scale-102 ease-in duration-300" >
-        </a>
-      </div>
-      <div class="relative lg:mt-2">
-        <div class="triangle absolute"></div>
-        <div class="product-name absolute text-[#fff]">
-          <p class="bg-[#00b5f1] mt-3 px-2 py-1 text-center rounded">
-            HASIL SURVEI PELAYANAN PUBLIK
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="induk relative">
-      <div class="image-box rounded">
-        <a href="https://postel.go.id/publikasi-data-statistik-44">
-          <img src="{% static "img/statistik.png" %}" alt="" width="100%"
-          height="100%" class="rounded hover:scale-102 ease-in duration-300" >
-        </a>
-      </div>
-      <div class="relative lg:mt-2">
-        <div class="triangle absolute"></div>
-        <div class="product-name absolute w-full text-[#fff]">
-          <p class="bg-[#00b5f1] mt-3 px-2 py-1 text-center rounded">
-            DATA STATISTIK
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="induk relative lg:mt-3">
-      <div class="image-box rounded">
-        <a href="https://postel.go.id/publikasi-surat-edaran-46">
-          <img src="{% static "img/survei.png" %}" alt="" width="100%"
-          height="100%" class="rounded hover:scale-102 ease-in duration-300" >
-        </a>
-      </div>
-      <div class="relative lg:mt-2">
-        <div class="triangle absolute"></div>
-        <div class="product-name absolute w-full text-[#fff]">
-          <p class="bg-[#00b5f1] mt-3 px-2 py-1 text-center rounded">
-            SURAT EDARAN
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="induk relative lg:mt-3">
-      <div class="image-box rounded">
-        <a href="https://postel.go.id/publikasi-laporan-tahunan-45">
-          <img src="{% static "img/laptah.png" %}" alt="" width="100%"
-          height="100%" class="rounded hover:scale-102 ease-in duration-300" >
-        </a>
-      </div>
-      <div class="relative lg:mt-2">
-        <div class="triangle absolute"></div>
-        <div class="product-name absolute w-full text-[#fff]">
-          <p class="bg-[#00b5f1] mt-3 px-2 py-1 text-center rounded">
-            LAPORAN TAHUNAN
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="induk relative lg:mt-3">
-      <div class="image-box rounded">
-        <a href="https://postel.go.id/publikasi-lain-lain-35">
-          <img src="{% static "img/survei.png" %}" alt="" width="100%"
-          height="100%" class="rounded hover:scale-102 ease-in duration-300" >
-        </a>
-      </div>
-      <div class="relative lg:mt-2">
-        <div class="triangle absolute"></div>
-        <div class="product-name absolute w-full text-[#fff]">
-          <p class="bg-[#00b5f1] mt-3 px-2 py-1 text-center rounded">
-            LAIN-LAIN
-          </p>
-        </div>
-      </div>
-    </div>
+    <h2 class="text-xl md:text-3xl">"ASN berAKHLAK"</h2>
   </div>
 </div>
 
-<!-- prettier-ignore -->
-{% endblock content %} {% block script %}
+
+<!-- ================= 7. MEDIA INFRASTRUKTUR DIGITAL ================= -->
+<div id="infrastruktur" class="lg:p-[80px] md:p-[50px] p-[30px]">
+
+  <div class="infrastruktur-headline text-center mb-8">
+
+    <h2 class="text-2xl md:text-3xl font-bold text-[#003c69]">
+      MEDIA INFRASTRUKTUR DIGITAL
+    </h2>
+
+    <div class="w-[50px] h-[4px] bg-[#00b5f1] mx-auto mt-2"></div>
+
+  </div>
+
+
+  <!-- ================= INSTAGRAM BALMON MATARAM ================= -->
+  <div class="max-w-6xl mx-auto mb-12">
+
+    <div class="text-center mb-6">
+
+      <h3 class="text-xl md:text-2xl font-bold text-[#003c69]">
+        <i class="fa-brands fa-instagram mr-2"></i>
+        INSTAGRAM BALMON MATARAM
+      </h3>
+
+      <p class="text-sm text-gray-500 mt-2">
+        Informasi dan dokumentasi kegiatan Balmon Mataram
+      </p>
+
+      <a href="https://www.instagram.com/balmonmataram/"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="text-[#00b5f1] font-semibold text-sm hover:text-[#003c69]">
+        @balmonmataram
+      </a>
+
+    </div>
+
+
+    <!-- SLIDER INSTAGRAM -->
+    <div class="swiper igPostSwiper">
+
+      <div class="swiper-wrapper">
+
+
+        <!-- ================= HALAMAN 1 ================= -->
+        <div class="swiper-slide">
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+            <!-- POSTINGAN INSTAGRAM 1 -->
+            <div class="ig-post-card">
+              <blockquote class="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/POST_ID_1/"
+                data-instgrm-version="14"
+                style="width:100%; margin:0 auto;">
+              </blockquote>
+            </div>
+
+            <!-- POSTINGAN INSTAGRAM 2 -->
+            <div class="ig-post-card">
+              <blockquote class="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/POST_ID_2/"
+                data-instgrm-version="14"
+                style="width:100%; margin:0 auto;">
+              </blockquote>
+            </div>
+
+            <!-- POSTINGAN INSTAGRAM 3 -->
+            <div class="ig-post-card">
+              <blockquote class="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/POST_ID_3/"
+                data-instgrm-version="14"
+                style="width:100%; margin:0 auto;">
+              </blockquote>
+            </div>
+
+          </div>
+        </div>
+
+
+        <!-- ================= HALAMAN 2 ================= -->
+        <div class="swiper-slide">
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+            <!-- POSTINGAN INSTAGRAM 4 -->
+            <div class="ig-post-card">
+              <blockquote class="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/POST_ID_4/"
+                data-instgrm-version="14"
+                style="width:100%; margin:0 auto;">
+              </blockquote>
+            </div>
+
+            <!-- POSTINGAN INSTAGRAM 5 -->
+            <div class="ig-post-card">
+              <blockquote class="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/POST_ID_5/"
+                data-instgrm-version="14"
+                style="width:100%; margin:0 auto;">
+              </blockquote>
+            </div>
+
+            <!-- POSTINGAN INSTAGRAM 6 -->
+            <div class="ig-post-card">
+              <blockquote class="instagram-media"
+                data-instgrm-captioned
+                data-instgrm-permalink="https://www.instagram.com/p/DfYZ4UXmAX8/"
+                data-instgrm-version="14"
+                style="width:100%; margin:0 auto;">
+              </blockquote>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- NAVIGASI SLIDER INSTAGRAM -->
+      <div class="flex justify-center items-center gap-4 mt-6">
+
+        <button type="button" class="ig-prev">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <div class="ig-pagination"></div>
+
+        <button type="button" class="ig-next">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- FOLLOW INSTAGRAM -->
+    <div class="text-center mt-6">
+
+      <a href="https://www.instagram.com/balmonmataram/"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="inline-flex items-center gap-2 px-6 py-2 bg-[#00b5f1] text-white font-semibold rounded hover:bg-[#003c69] duration-300 transition">
+
+        <i class="fa-brands fa-instagram"></i>
+        Follow Instagram
+
+      </a>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- ================= SLIDER BERITA INFRASTRUKTUR ================= -->
+  <div class="swiper mySwiper mt-4 swiper-card">
+
+    <div class="swiper-wrapper">
+
+      {% for post in postingan %}
+
+      <div class="swiper-slide bg-[#003c69] rounded-lg p-[20px] text-[#fff] flex flex-col h-auto">
+
+        <a href="/blog/artikel/{{post.slug}}">
+
+          <div class="overflow-hidden rounded-lg">
+
+            <img src="{{post.image.url}}"
+                 alt=""
+                 class="h-[200px] w-full object-cover rounded-lg hover:scale-110 duration-300" />
+
+          </div>
+
+        </a>
+
+        <a href="/blog/artikel/{{post.slug}}">
+
+          <h4 class="pt-[15px] font-bold text-lg md:text-xl">
+            {{post.title}}
+          </h4>
+
+        </a>
+
+        <p class="text-xs text-gray-300 mt-1">
+          {{post.tanggal}}
+        </p>
+
+        <p class="text-sm mt-2 overflow-hidden text-ellipsis line-clamp-4 text-justify">
+          {{post.body}}
+        </p>
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
+    <div class="swiper-pagination mt-4"></div>
+
+  </div>
+
+
+  <div class="text-center mt-6">
+
+    <a href="/blog/artikel">
+
+      <button type="button"
+              class="text-[#ffffff] px-6 py-2 bg-[#00b5f1] rounded font-semibold hover:bg-[#003c69] hover:text-[#00b5f1] duration-300 ease-in-out">
+
+        Cek Selengkapnya
+
+      </button>
+
+    </a>
+
+  </div>
+
+</div>
+
+
+
+<!-- ================= 8. PETA LOKASI ================= -->
+<div class="bg-white py-10 md:py-14 px-4 md:px-6">
+
+  <div class="max-w-6xl mx-auto">
+
+    <div class="text-center mb-8">
+
+      <h2 class="text-xl md:text-2xl font-bold text-[#003c69]">
+        LOKASI KANTOR
+      </h2>
+
+      <div class="w-[50px] h-[4px] bg-[#00b5f1] mx-auto mt-2 rounded"></div>
+
+    </div>
+
+    <div id="map" class="w-full h-[280px] md:h-[400px] rounded-xl shadow-lg overflow-hidden"></div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ================= 9. LINK TERKAIT ================= -->
+<div id="link-terkait" class="bg-[#003c69] lg:p-[80px] md:p-[50px] p-[30px]">
+
+  <div class="text-[#fff] text-center mb-8">
+
+    <h2 class="text-2xl md:text-3xl font-bold">
+      LINK TERKAIT
+    </h2>
+
+    <div class="w-[50px] h-[4px] my-[10px] mx-auto bg-[#00b5f1] rounded"></div>
+
+  </div>
+
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 pt-4">
+
+    <div class="rounded-[20px] overflow-hidden hover:scale-105 ease-in duration-300 shadow-lg">
+
+      <a href="https://pelayanansdppi.postel.go.id/" target="_blank">
+
+        <img src="{% static 'img/layanan.png' %}"
+             alt="Layanan"
+             class="w-full h-auto object-cover">
+
+      </a>
+
+    </div>
+
+
+    <div class="rounded-[20px] overflow-hidden hover:scale-105 ease-in duration-300 shadow-lg">
+
+      <a href="https://sidia.postel.go.id/" target="_blank">
+
+        <img src="{% static 'img/digital-asistant.png' %}"
+             alt="Digital Assistant"
+             class="w-full h-auto object-cover">
+
+      </a>
+
+    </div>
+
+
+    <div class="rounded-[20px] overflow-hidden hover:scale-105 ease-in duration-300 shadow-lg">
+
+      <a href="https://www.postel.go.id/sdppi_maps/" target="_blank">
+
+        <img src="{% static 'img/maps.png' %}"
+             alt="Maps"
+             class="w-full h-auto object-cover">
+
+      </a>
+
+    </div>
+
+
+    <div class="rounded-[20px] overflow-hidden hover:scale-105 ease-in duration-300 shadow-lg">
+
+      <a href="https://ifasfest.id/" target="_blank">
+
+        <img src="{% static 'img/kolaborasi.png' %}"
+             alt="Kolaborasi"
+             class="w-full h-auto object-cover">
+
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ================= 10. PUBLIKASI ================= -->
+<div id="publikasi" class="bg-[#00508c] lg:p-[80px] md:p-[50px] p-[30px]">
+
+  <div class="text-[#fff] text-center mb-8">
+
+    <h2 class="text-2xl md:text-3xl font-bold">
+      PUBLIKASI
+    </h2>
+
+    <div class="w-[50px] h-[4px] my-[10px] mx-auto bg-[#003c69] rounded"></div>
+
+  </div>
+
+
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pt-4">
+
+
+    <div class="flex flex-col">
+
+      <div class="rounded-lg overflow-hidden shadow-md group">
+
+        <a href="https://postel.go.id/publikasi-lakip-59" target="_blank">
+
+          <img src="{% static 'img/kinerja.png' %}"
+               alt="LAPKIN"
+               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
+
+        </a>
+
+      </div>
+
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded">
+        LAPKIN
+      </p>
+
+    </div>
+
+
+    <div class="flex flex-col">
+
+      <div class="rounded-lg overflow-hidden shadow-md group">
+
+        <a href="https://postel.go.id/publikasi-renstra-119" target="_blank">
+
+          <img src="{% static 'img/tekno.png' %}"
+               alt="RENSTRA"
+               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
+
+        </a>
+
+      </div>
+
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded">
+        RENSTRA
+      </p>
+
+    </div>
+
+
+    <div class="flex flex-col">
+
+      <div class="rounded-lg overflow-hidden shadow-md group">
+
+        <a href="https://postel.go.id/publikasi-hasil-survei-pelayanan-publik-69" target="_blank">
+
+          <img src="{% static 'img/survei.png' %}"
+               alt="SURVEI"
+               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
+
+        </a>
+
+      </div>
+
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">
+        HASIL SURVEI
+      </p>
+
+    </div>
+
+
+    <div class="flex flex-col">
+
+      <div class="rounded-lg overflow-hidden shadow-md group">
+
+        <a href="https://postel.go.id/publikasi-data-statistik-44" target="_blank">
+
+          <img src="{% static 'img/statistik.png' %}"
+               alt="STATISTIK"
+               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
+
+        </a>
+
+      </div>
+
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">
+        DATA STATISTIK
+      </p>
+
+    </div>
+
+
+    <div class="flex flex-col">
+
+      <div class="rounded-lg overflow-hidden shadow-md group">
+
+        <a href="https://postel.go.id/publikasi-surat-edaran-46" target="_blank">
+
+          <img src="{% static 'img/survei.png' %}"
+               alt="SURAT EDARAN"
+               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
+
+        </a>
+
+      </div>
+
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">
+        SURAT EDARAN
+      </p>
+
+    </div>
+
+
+    <div class="flex flex-col">
+
+      <div class="rounded-lg overflow-hidden shadow-md group">
+
+        <a href="https://postel.go.id/publikasi-laporan-tahunan-45" target="_blank">
+
+          <img src="{% static 'img/laptah.png' %}"
+               alt="LAPTAH"
+               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
+
+        </a>
+
+      </div>
+
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">
+        LAPORAN TAHUNAN
+      </p>
+
+    </div>
+
+
+    <div class="flex flex-col">
+
+      <div class="rounded-lg overflow-hidden shadow-md group">
+
+        <a href="https://postel.go.id/publikasi-lain-lain-35" target="_blank">
+
+          <img src="{% static 'img/survei.png' %}"
+               alt="LAIN-LAIN"
+               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
+
+        </a>
+
+      </div>
+
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">
+        LAIN-LAIN
+      </p>
+
+    </div>
+
+
+  </div>
+
+</div>
+
+{% endblock content %}
+
+
+
+{% block script %}
+
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+
+
+<!-- ================= 1. SCRIPT SLIDER BANNER ================= -->
 <script>
-  var swiper = new Swiper(".mySwiper", {
-    slidesPerView: 1,
-    spaceBetween: 30,
-    loop: true,
-    autoplay: {
-      delay: 3000,
-    },
-    pagination: {
-      el: ".swiper-pagination",
-      clickable: true,
-    },
-    breakpoints: {
-      768: {
-        slidesPerView: 2,
-        spaceBetween: 30,
-      },
-      1024: {
-        slidesPerView: 3,
-        spaceBetween: 30,
-      },
-    },
-  });
-</script>
-<script>
+
   var swiper2 = new Swiper(".swiper2", {
-    spaceBetween: 30,
+
+    spaceBetween: 0,
     centeredSlides: true,
     loop: true,
+
     autoplay: {
-      delay: 2500,
-      disableOnInteraction: false,
+      delay: 3000,
+      disableOnInteraction: false
     },
+
     pagination: {
-      el: ".swiper-pagination",
-      clickable: true,
+      el: ".swiper2 .swiper-pagination",
+      clickable: true
     },
+
     navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
+      nextEl: ".swiper2 .swiper-button-next",
+      prevEl: ".swiper2 .swiper-button-prev"
+    }
+
   });
+
 </script>
 
+
+
+<!-- ================= 2. SCRIPT SLIDER MEDIA INFRASTRUKTUR ================= -->
 <script>
+
+  var swiper = new Swiper(".mySwiper", {
+
+    slidesPerView: 1,
+    spaceBetween: 20,
+    loop: true,
+
+    autoplay: {
+      delay: 4000,
+      disableOnInteraction: false
+    },
+
+    pagination: {
+      el: ".mySwiper .swiper-pagination",
+      clickable: true
+    },
+
+    breakpoints: {
+
+      640: {
+        slidesPerView: 1,
+        spaceBetween: 20
+      },
+
+      768: {
+        slidesPerView: 2,
+        spaceBetween: 30
+      },
+
+      1024: {
+        slidesPerView: 3,
+        spaceBetween: 30
+      }
+
+    }
+
+  });
+
+</script>
+
+
+
+<!-- ================= 3. SCRIPT SLIDER INSTAGRAM ================= -->
+<script>
+
+  var igPostSwiper = new Swiper(".igPostSwiper", {
+
+    slidesPerView: 1,
+    spaceBetween: 20,
+
+    loop: false,
+    rewind: true,
+
+    speed: 800,
+
+    autoplay: {
+      delay: 6000,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: true
+    },
+
+    pagination: {
+      el: ".ig-pagination",
+      clickable: true
+    },
+
+    navigation: {
+      nextEl: ".ig-next",
+      prevEl: ".ig-prev"
+    }
+
+  });
+
+</script>
+
+
+
+<!-- ================= 4. INSTAGRAM EMBED SCRIPT ================= -->
+<script async
+  src="https://www.instagram.com/embed.js"
+  onload="if(window.instgrm){window.instgrm.Embeds.process();}">
+</script>
+
+
+
+<!-- ================= 5. SCRIPT PETA LOKASI ================= -->
+<script>
+
+  const map = L.map('map', {
+    scrollWheelZoom: false
+  }).setView([-8.5833, 116.1167], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+    attribution: '&copy; OpenStreetMap contributors'
+
+  }).addTo(map);
+
+  L.marker([-8.5833, 116.1167]).addTo(map)
+
+    .bindPopup('<b>Balmon SFR Kelas I Mataram</b><br>Nusa Tenggara Barat')
+
+    .openPopup();
+
+</script>
+
+
+
+<!-- ================= SCRIPT NAVBAR MOBILE ================= -->
+<script>
+
   const navLinks = document.querySelector(".nav-links");
+
   function onToggleMenu(e) {
+
     e.name = e.name === "menu-outline" ? "close-outline" : "menu-outline";
+
     navLinks.classList.toggle("invisible");
+
   }
+
 </script>
 
+
+
+<!-- ================= SCRIPT DROPDOWN LAINNYA ================= -->
 <script>
+
   const navLinks2 = document.querySelector(".nav-links2");
+
   function onToggleMenu2(e) {
-    e.name == "menu-outline2"
     navLinks2.classList.toggle("hidden");
   }
-</script>
 
-<script>
+
   const navLinks3 = document.querySelector(".nav-links3");
+
   function onToggleMenu3(e) {
-    e.name == "menu-outline3"
     navLinks3.classList.toggle("hidden");
   }
-</script>
 
-<script>
+
   const navLinks4 = document.querySelector(".nav-links4");
+
   function onToggleMenu4(e) {
-    e.name == "menu-outline4"
     navLinks4.classList.toggle("hidden");
   }
-</script>
 
-<script>
+
   const navLinks5 = document.querySelector(".nav-links5");
+
   function onToggleMenu5(e) {
-    e.name == "menu-outline5"
     navLinks5.classList.toggle("hidden");
   }
-</script>
 
-<script>
+
   const navLinks6 = document.querySelector(".nav-links6");
+
   function onToggleMenu6(e) {
-    e.name == "menu-outline6"
     navLinks6.classList.toggle("hidden");
   }
-</script>
 
-<script>
+
   const navLinks7 = document.querySelector(".nav-links7");
+
   function onToggleMenu7(e) {
-    e.name == "menu-outline7"
     navLinks7.classList.toggle("hidden");
   }
+
 </script>
 
+
+
+<!-- ================= SCRIPT EKSTERNAL ================= -->
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<script src="{% static "vendor/bootstrap.js" %}">
+
 <script
   src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
   integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-  crossorigin="anonymous"
-></script>
+  crossorigin="anonymous">
+</script>
+
 <script
   src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
   integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
-  crossorigin="anonymous"
-></script>
-<script
-  type="module"
-  src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
-></script>
-<script
-  nomodule
-  src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
-></script>
+  crossorigin="anonymous">
+</script>
+
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
 {% endblock script %}
