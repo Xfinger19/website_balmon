@@ -1,17 +1,84 @@
 <!-- prettier-ignore -->
-{% extends "base.html" %} {% load static %} {% block style %} <link
-rel="stylesheet" href="{% static "css/profiles.css" %}"> <link rel="stylesheet"
-href="{% static "vendor/bootstrap.css" %}">
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-/>
+{% extends "base.html" %} 
+{% load static %} 
 
-{% endblock style %} {% block content %} {% include "snippets/header.html" %}
-<!-- prettier-ignore -->
-{% block title %}
-<div class="w-full h-[70px] bg-[#002846] flex items-center pl-15">
-  <ul class="flex text-[#fff] m-0 gap-3">
+{% block style %} 
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}"> 
+<link rel="stylesheet" href="{% static 'vendor/bootstrap.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+    /* Animasi Melayang (Floating) */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    .animate-float {
+        animation: float 4s ease-in-out infinite;
+    }
+    .animate-float-delayed {
+        animation: float 4s ease-in-out infinite;
+        animation-delay: 2s;
+    }
+    
+    /* Efek Kaca (Glassmorphism) untuk Kartu */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Styling Foto: Persegi Melengkung, Tanpa Border */
+    .photo-container {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border-radius: 1rem;
+        overflow: hidden;
+        background-color: transparent;
+        position: relative;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .photo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center bottom;
+    }
+
+    /* ========================================= */
+    /* ANIMASI GARIS ORGANISASI (FREKUENSI)      */
+    /* ========================================= */
+    @keyframes pulse-line {
+        0% { opacity: 0.3; box-shadow: 0 0 0px rgba(0, 176, 236, 0); }
+        50% { opacity: 1; box-shadow: 0 0 10px rgba(0, 176, 236, 0.8); }
+        100% { opacity: 0.3; box-shadow: 0 0 0px rgba(0, 176, 236, 0); }
+    }
+
+    .connector-line {
+        background-color: rgba(255, 255, 255, 0.5);
+        animation: pulse-line 3s infinite ease-in-out;
+    }
+    /* Delay agar tidak berdenyut bersamaan */
+    .connector-delay-1 { animation-delay: 0.5s; }
+    .connector-delay-2 { animation-delay: 1s; }
+    .connector-delay-3 { animation-delay: 1.5s; }
+
+</style>
+{% endblock style %} 
+
+{% block content %} 
+{% include "snippets/header.html" %}
+
+<!-- Breadcrumb -->
+<div class="w-full h-[70px] bg-[#002846] flex items-center pl-5 md:pl-15">
+  <ul class="flex text-[#fff] m-0 gap-3 text-sm md:text-base">
     <li>Home</li>
     <li>/</li>
     <li>Profiles</li>
@@ -19,114 +86,149 @@ href="{% static "vendor/bootstrap.css" %}">
     <li>{{title.0}}</li>
   </ul>
 </div>
-{% endblock title %}
-<div class="bg-gradient-to-br from-[#00508c] to-[#2577B4]">
-  <div id="titleBar" class="bg-[#2577B4] w-full ">
-    <div class="flex flex-col justify-between h-full text-[#fff]">
-      <img src="{% static "img/spike-atas.png" %}" alt="">
-      <h3 class="mx-auto m-0 lg:text-normal text-center">Struktur Organisasi Direktorat Jenderal Infrastruktur Digital</h3>
-      <img src="{% static "img/spike-bawah.png" %}" alt="">
+
+<!-- Bagian Header Judul Struktur -->
+<div class="bg-gradient-to-br from-[#00508c] to-[#2577B4] py-10 overflow-hidden">
+    <div class="text-center text-white mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold">Struktur Organisasi</h2>
+        <div class="w-24 h-1 bg-[#00b0ec] mx-auto mt-2 rounded-full"></div>
     </div>
-  </div>
-  <div class="bg-gradient-to-br from-[#00508c] to-[#2577B4] text-[#fff]">
-    <div class="">
-      <div class="lg:px-100 px-10 py-10">
-        <img id="thumbnail-image" src="{% static "img/struktur.png" %}"
-        class="cursor-zoom-in " alt="">
-      </div>
-      <div
-        id="image-modal"
-        class="fixed hidden top-0 left-0 w-full h-full bg-black bg-opacity-75 z-50 flex items-center justify-center"
-      >
-        <div class="relative max-w-4xl max-h-[90vh]">
-          <button
-            id="close-modal"
-            class="absolute -top-10 right-0 text-white text-4xl hover:text-gray-300 cursor-pointer"
-          >
-            &times;
-          </button>
-          <img id="modal-image" src="{% static "img/struktur.png" %}" alt=""
-          class="max-w-full max-h-[80vh] rounded-lg">
+
+    <!-- Bagian Bagan Struktur Baru -->
+    <div class="container mx-auto px-4 pb-20 max-w-5xl">
+        
+        <!-- 1. KEPALA BALAI (Atas) -->
+        <div class="flex justify-center relative z-10">
+            <div class="glass-card rounded-2xl p-6 text-center w-64 animate-float">
+                <!-- ============================================== -->
+                <!-- 👇 TEMPAT FOTO KEPALA BALAI (Hamzah) 👇 -->
+                <div class="photo-container mx-auto mb-4 w-40">
+                    <img src="{% static 'img/kabalmon.png' %}" alt="Kepala Balai">
+                    <!-- Ganti 'default-image.png' dengan nama file foto Hamzah, misal: 'img/hamzah.png' -->
+                </div>
+                <!-- 👆 AKHIR TEMPAT FOTO KEPALA BALAI 👆 -->
+                <!-- ============================================== -->
+                <h3 class="text-xl font-bold text-white">Hamzah, S.H., M.H.</h3>
+                <p class="text-sm text-[#00b0ec] font-semibold mt-1">Kepala Balai Monitor SFR Kelas I</p>
+            </div>
         </div>
-      </div>
+
+        <!-- Garis Penghubung Vertikal 1 -->
+        <div class="connector-line w-1 h-10 mx-auto"></div>
+
+        <!-- Garis Horizontal Utama -->
+        <div class="relative w-full h-1 connector-line">
+            <!-- Garis Vertikal ke Kanan (Kasubag) -->
+            <div class="absolute right-0 top-0 w-1 h-8 bg-white/50 connector-line connector-delay-1 transform translate-x-1/2"></div>
+            <!-- Garis Vertikal ke Tengah (Tim Kerja) -->
+            <div class="absolute left-1/2 top-0 w-1 h-8 bg-white/50 connector-line connector-delay-2 transform -translate-x-1/2"></div>
+        </div>
+
+        <!-- 2. KASUBAG UMUM (Kanan) -->
+        <div class="flex justify-end pr-0 md:pr-10 lg:pr-20">
+            <div class="glass-card rounded-2xl p-6 text-center w-64 animate-float-delayed mt-8">
+                <!-- ============================================== -->
+                <!-- 👇 TEMPAT FOTO KASUBAG UMUM (Rina Arlina) 👇 -->
+                <div class="photo-container mx-auto mb-4 w-36">
+                    <img src="{% static 'img/kasubagumum1.jpeg' %}" alt="Kasubag Umum">
+                    <!-- Ganti 'default-image.png' dengan nama file foto Rina, misal: 'img/rina.png' -->
+                </div>
+                <!-- 👆 AKHIR TEMPAT FOTO KASUBAG UMUM 👆 -->
+                <!-- ============================================== -->
+                <h3 class="text-lg font-bold text-white">Rina Arlina., S.E., M.M.</h3>
+                <p class="text-sm text-[#00b0ec] font-semibold mt-1">Subbagian Umum</p>
+            </div>
+        </div>
+
+        <!-- 3. TIGA TIM KERJA (Bawah) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 justify-items-center mt-10 relative">
+            <!-- Garis Horizontal Penghubung Tim Kerja -->
+            <div class="hidden md:block absolute top-0 left-[16%] right-[16%] h-1 connector-line connector-delay-3"></div>
+
+            <!-- Tim 1: Kualitas Layanan -->
+            <div class="flex flex-col items-center w-full relative">
+                <div class="hidden md:block w-1 h-8 connector-line"></div>
+                <div class="glass-card rounded-2xl p-6 text-center w-full max-w-xs animate-float z-10">
+                    <!-- ============================================== -->
+                    <!-- 👇 TEMPAT FOTO TIM KUALITAS (Anna Nuraeni) 👇 -->
+                    <div class="photo-container mx-auto mb-4 w-36">
+                        <img src="{% static 'img/default-image.png' %}" alt="Tim Kualitas">
+                        <!-- Ganti 'default-image.png' dengan nama file foto Anna, misal: 'img/anna.png' -->
+                    </div>
+                    <!-- 👆 AKHIR TEMPAT FOTO TIM KUALITAS 👆 -->
+                    <!-- ============================================== -->
+                    <h3 class="text-lg font-bold text-white">Anna Nuraeni</h3>
+                    <p class="text-sm text-[#00b0ec] font-semibold mt-1 leading-tight">Tim Kerja Kualitas Layanan Infrastruktur Digital</p>
+                </div>
+            </div>
+
+            <!-- Tim 2: Monitoring & Penertiban -->
+            <div class="flex flex-col items-center w-full relative">
+                <div class="hidden md:block w-1 h-8 connector-line connector-delay-1"></div>
+                <div class="glass-card rounded-2xl p-6 text-center w-full max-w-xs animate-float-delayed z-10">
+                    <!-- ============================================== -->
+                    <!-- 👇 TEMPAT FOTO TIM MONITORING (Abdy Budiman) 👇 -->
+                    <div class="photo-container mx-auto mb-4 w-36">
+                        <img src="{% static 'img/default-image.png' %}" alt="Tim Monitoring">
+                        <!-- Ganti 'default-image.png' dengan nama file foto Abdy, misal: 'img/abdy.png' -->
+                    </div>
+                    <!-- 👆 AKHIR TEMPAT FOTO TIM MONITORING 👆 -->
+                    <!-- ============================================== -->
+                    <h3 class="text-lg font-bold text-white">Abdy Budiman Djara</h3>
+                    <p class="text-sm text-[#00b0ec] font-semibold mt-1 leading-tight">Tim Kerja Monitoring dan Penertiban SFR dan APT</p>
+                </div>
+            </div>
+
+            <!-- Tim 3: Sarana Prasarana -->
+            <div class="flex flex-col items-center w-full relative">
+                <div class="hidden md:block w-1 h-8 connector-line connector-delay-2"></div>
+                <div class="glass-card rounded-2xl p-6 text-center w-full max-w-xs animate-float z-10">
+                    <!-- ============================================== -->
+                    <!-- 👇 TEMPAT FOTO TIM SARANA (Herlin Kurnia) 👇 -->
+                    <div class="photo-container mx-auto mb-4 w-36">
+                        <img src="{% static 'img/default-image.png' %}" alt="Tim Sarana">
+                        <!-- Ganti 'default-image.png' dengan nama file foto Herlin, misal: 'img/herlin.png' -->
+                    </div>
+                    <!-- 👆 AKHIR TEMPAT FOTO TIM SARANA 👆 -->
+                    <!-- ============================================== -->
+                    <h3 class="text-lg font-bold text-white">Herlin Kurnia Wulandari</h3>
+                    <p class="text-sm text-[#00b0ec] font-semibold mt-1 leading-tight">Tim Kerja Sarana Prasarana Monitoring dan Layanan</p>
+                </div>
+            </div>
+
+        </div>
     </div>
-  </div>
-  <div id="titleBar" class="bg-[#2577B4] w-full ">
-    <div class="flex flex-col justify-between h-full text-[#fff]">
-      <img src="{% static "img/spike-atas.png" %}" alt="">
-      <h3 class="mx-auto m-0 text-center lg:text-normal">Struktur Organisasi BALMON SFR Kelas II Mataram</h3>
-      <img src="{% static "img/spike-bawah.png" %}" alt="">
-    </div>
-  </div>
-  <div class="p-10">
-    <div class="">
-      <img src="{% static "img/kepala.png" %}" alt="" class="mx-auto lg:w-[15%] w-[30%] rounded-2xl border-3 border-[#fff]">
-    </div>
-    <div class="flex justify-center items-center">
-      <div class="w-1 lg:h-[400px] h-[300px] bg-white lg:ml-95 ml-43"></div>
-      <div class="h-1 lg:w-[200px] w-[50px] bg-white"></div>
-      <a href="/profiles/struktur-organisasi/kasubag" class="lg:w-[15%] w-[30%] rounded-2xl border-3 border-[#fff] overflow-hidden">
-        <img src="{% static "img/kasubag.png" %}" alt="" class="hover:opacity-75 ">
-      </a>
-    </div>
-    <div class="h-1 lg:w-[70%] w-[309px] bg-white mx-auto"></div>
-    <div class="flex">
-      <div class="flex flex-col items-center">
-        <div class="w-1 h-[50px] bg-white "></div>
-        <a href="/profiles/struktur-organisasi/monev" class="lg:w-[55%] rounded-2xl border-3 border-[#fff] overflow-hidden">
-          <img src="{% static "img/monev.png" %}" alt="" class="hover:opacity-75 "> 
-        </a>
-      </div>
-      <div class="flex flex-col items-center mx-13">
-        <div class="w-1 h-[50px] bg-white "></div>
-        <a href="/profiles/struktur-organisasi/penertiban" class="lg:w-[55%] rounded-2xl border-3 border-[#fff] overflow-hidden">
-          <img src="{% static "img/penertiban.png" %}" alt="" class="hover:opacity-75"> 
-        </a>
-      </div>
-      <div class="flex flex-col items-center">
-        <div class="w-1 h-[50px] bg-white "></div>
-        <a href="/profiles/struktur-organisasi/pemeliharaan" class="lg:w-[55%] rounded-2xl border-3 border-[#fff] overflow-hidden">
-          <img src="{% static "img/pemeliharaan.png" %}" alt="" class="hover:opacity-75"> 
-        </a>
-      </div>
-    </div>
-  </div>
-  <div class="lg:px-30 px-10 pb-20 lg:block">
-    {% comment %} <div class="grid grid-cols-4 grid-rows-1 gap-4 text-[#fff]">
-      <div class="mx-auto text-center mb-2">
-        <p class="m-0 text-[25px]">TIM KERJA</p>
-        <p class="m-0 text-[20px] text-[#00b0ec]">Bagian Umum</p>
-      </div>
-      <div class="mx-auto text-center mb-2">
-        <p class="m-0 text-[25px]">TIM KERJA</p>
-        <p class="m-0 text-[20px] text-[#00b0ec]">Monev SFR Dan Alat Telekomunikasi</p>
-      </div>
-      <div class="mx-auto text-center mb-2">
-        <p class="m-0 text-[25px]">TIM KERJA</p>
-        <p class="m-0 text-[20px] text-[#00b0ec]">Penertiban SFR dan Alat Komunikasi</p>
-      </div>
-      <div class="mx-auto text-center mb-2">
-        <p class="m-0 text-[25px]">TIM KERJA</p>
-        <p class="m-0 text-[20px] text-[#00b0ec]">Pemeliharaan Infrastruktur Sistem Monitoring Frekuensi Radio</p>
-      </div>
-    </div> {% endcomment %}
-    <div class="grid lg:grid-cols-4 lg:grid-rows-1 gap-4">
+</div>
+
+<!-- Bagian Daftar Anggota (List Bawah) -->
+<div class="bg-gradient-to-br from-[#00508c] to-[#2577B4] pb-20 px-4 md:px-10 lg:px-30">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {% for nama, jabatan in anggota %}
-      <div class="bg-[#003c69] flex rounded-xl overflow-hidden items-center shadow-xl/50 shadow-[#00b0ec] text-[#fff]">
-        <div class="w-1/2 h-full flex items-center">
-          <img src="{% static "img/default-image.png" %}" alt="" class="rounded-full p-3">
+      <div class="bg-[#003c69]/80 backdrop-blur-sm flex rounded-xl overflow-hidden items-center shadow-lg border border-white/10 text-[#fff] hover:bg-[#003c69] transition duration-300">
+        <div class="w-1/3 h-full flex items-center justify-center p-2">
+            <!-- ============================================== -->
+            <!-- 👇 TEMPAT FOTO ANGGOTA LIST BAWAH 👇 -->
+            <div class="photo-container w-16 h-16">
+                <img src="{% static 'img/default-image.png' %}" alt="Foto">
+            </div>
+            <!-- Ganti 'default-image.png' dengan nama file foto anggota, misal: 'img/nama-anggota.png' -->
+            <!-- 👆 AKHIR TEMPAT FOTO ANGGOTA LIST BAWAH 👆 -->
+            <!-- ============================================== -->
         </div>
-        <div class="w-1/2 pr-3 py-3">
-          <h6 class="m-0">{{nama}}</h6>
-          <div class="w-full bg-[#000]"></div>
-          <p class="text-[#00b0ec] m-0">{{jabatan}}</p>
+        <div class="w-2/3 pr-3 py-3">
+          <h6 class="m-0 font-bold text-sm md:text-base leading-tight">{{nama}}</h6>
+          <div class="w-full h-px bg-white/20 my-1"></div>
+          <p class="text-[#00b0ec] m-0 text-xs leading-tight">{{jabatan}}</p>
         </div>
       </div>
       {% endfor %}
     </div>
-  </div>
 </div>
-{% endblock content %} {% block script %}
+
+{% endblock content %} 
+
+{% block script %}
+<!-- Script Navbar Mobile (Tetap dipertahankan) -->
 <script>
   const navLinks = document.querySelector(".nav-links");
   function onToggleMenu(e) {
@@ -134,118 +236,21 @@ href="{% static "vendor/bootstrap.css" %}">
     navLinks.classList.toggle("invisible");
   }
 </script>
-
 <script>
   const navLinks2 = document.querySelector(".nav-links2");
-  function onToggleMenu2(e) {
-    e.name == "menu-outline2"
-    navLinks2.classList.toggle("hidden");
-  }
-</script>
-
-<script>
+  function onToggleMenu2(e) { navLinks2.classList.toggle("hidden"); }
   const navLinks3 = document.querySelector(".nav-links3");
-  function onToggleMenu3(e) {
-    e.name == "menu-outline3"
-    navLinks3.classList.toggle("hidden");
-  }
-</script>
-
-<script>
+  function onToggleMenu3(e) { navLinks3.classList.toggle("hidden"); }
   const navLinks4 = document.querySelector(".nav-links4");
-  function onToggleMenu4(e) {
-    e.name == "menu-outline4"
-    navLinks4.classList.toggle("hidden");
-  }
-</script>
-
-<script>
+  function onToggleMenu4(e) { navLinks4.classList.toggle("hidden"); }
   const navLinks5 = document.querySelector(".nav-links5");
-  function onToggleMenu5(e) {
-    e.name == "menu-outline5"
-    navLinks5.classList.toggle("hidden");
-  }
-</script>
-
-<script>
+  function onToggleMenu5(e) { navLinks5.classList.toggle("hidden"); }
   const navLinks6 = document.querySelector(".nav-links6");
-  function onToggleMenu6(e) {
-    e.name == "menu-outline6"
-    navLinks6.classList.toggle("hidden");
-  }
-</script>
-
-<script>
+  function onToggleMenu6(e) { navLinks6.classList.toggle("hidden"); }
   const navLinks7 = document.querySelector(".nav-links7");
-  function onToggleMenu7(e) {
-    e.name == "menu-outline7"
-    navLinks7.classList.toggle("hidden");
-  }
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // Elemen-elemen yang diperlukan
-    const thumbnail = document.getElementById("thumbnail-image");
-    const modal = document.getElementById("image-modal");
-    const modalImage = document.getElementById("modal-image");
-    const closeModal = document.getElementById("close-modal");
-
-    // Fungsi untuk membuka modal
-    function openModal() {
-      modal.classList.remove("hidden");
-      modal.classList.add("flex");
-      document.body.style.overflow = "hidden"; // Mencegah scroll
-    }
-
-    // Fungsi untuk menutup modal
-    function closeModalFunc() {
-      modal.classList.add("hidden");
-      modal.classList.remove("flex");
-      document.body.style.overflow = "auto"; // Mengembalikan scroll
-    }
-
-    // Event listener untuk thumbnail
-    thumbnail.addEventListener("click", openModal);
-
-    // Event listener untuk tombol close
-    closeModal.addEventListener("click", closeModalFunc);
-
-    // Tutup modal ketika klik di luar gambar
-    modal.addEventListener("click", function (event) {
-      if (event.target === modal) {
-        closeModalFunc();
-      }
-    });
-
-    // Tutup modal dengan tombol Escape
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && !modal.classList.contains("hidden")) {
-        closeModalFunc();
-      }
-    });
-  });
+  function onToggleMenu7(e) { navLinks7.classList.toggle("hidden"); }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<script src="{% static "vendor/bootstrap.js" %}">
-<script
-  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-  integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-  crossorigin="anonymous"
-></script>
-<script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-  integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
-  crossorigin="anonymous"
-></script>
-<script
-  type="module"
-  src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
-></script>
-<script
-  nomodule
-  src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
-></script>
-
+<script src="{% static 'vendor/bootstrap.js' %}"></script>
 {% endblock script %}
