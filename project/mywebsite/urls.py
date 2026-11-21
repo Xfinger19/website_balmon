@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -9,7 +8,6 @@ admin.site.site_header = "Login - Balmon Kelas II Mataram"
 admin.site.site_title = "Balmon Kelas II Mataram"
 admin.site.index_title = "Dashboard"
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.index),
@@ -19,4 +17,6 @@ urlpatterns = [
     path("pelayanan/", include("pelayanan.urls"))
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Serve media saat DEBUG=False (untuk presentasi)
+if not settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
