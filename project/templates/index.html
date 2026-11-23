@@ -1,4 +1,3 @@
-
 {% extends "base.html" %} 
 {% load static %} 
 
@@ -18,21 +17,10 @@
     100% { transform: translateY(0px); }
   }
 
-  /* Animasi gelombang frekuensi memancar */
   @keyframes gelombangFrekuensi {
-    0% {
-      transform: scale(0.55);
-      opacity: 0;
-    }
-
-    15% {
-      opacity: 0.85;
-    }
-
-    100% {
-      transform: scale(1.75);
-      opacity: 0;
-    }
+    0% { transform: scale(0.55); opacity: 0; }
+    15% { opacity: 0.85; }
+    100% { transform: scale(1.75); opacity: 0; }
   }
 
   @keyframes fadeInLeft {
@@ -51,27 +39,12 @@
     z-index: 10;
   }
 
-  .fade-in-left {
-    animation: fadeInLeft 1s ease-out forwards;
-  }
+  .fade-in-left { animation: fadeInLeft 1s ease-out forwards; }
+  .fade-in-right { animation: fadeInRight 1s ease-out forwards; }
 
-  .fade-in-right {
-    animation: fadeInRight 1s ease-out forwards;
-  }
+  @media (max-width: 1024px) { .kabalmon-float { animation-duration: 5s; } }
+  @media (max-width: 768px) { .kabalmon-float { animation-duration: 6s; } }
 
-  @media (max-width: 1024px) {
-    .kabalmon-float {
-      animation-duration: 5s;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .kabalmon-float {
-      animation-duration: 6s;
-    }
-  }
-
-  /* Container foto Kepala Balmon */
   .kabalmon-wrapper {
     position: relative;
     display: flex;
@@ -83,7 +56,6 @@
     isolation: isolate;
   }
 
-  /* Gelombang frekuensi pertama */
   .kabalmon-wrapper::before {
     content: "";
     position: absolute;
@@ -91,15 +63,12 @@
     aspect-ratio: 1 / 1;
     border-radius: 50%;
     border: 2px solid rgba(0, 200, 255, 0.9);
-    box-shadow:
-      0 0 12px rgba(0, 200, 255, 0.7),
-      inset 0 0 12px rgba(0, 200, 255, 0.2);
+    box-shadow: 0 0 12px rgba(0, 200, 255, 0.7), inset 0 0 12px rgba(0, 200, 255, 0.2);
     animation: gelombangFrekuensi 3s ease-out infinite;
     z-index: 0;
     pointer-events: none;
   }
 
-  /* Gelombang frekuensi kedua */
   .kabalmon-wrapper::after {
     content: "";
     position: absolute;
@@ -107,9 +76,7 @@
     aspect-ratio: 1 / 1;
     border-radius: 50%;
     border: 2px solid rgba(0, 176, 236, 0.8);
-    box-shadow:
-      0 0 18px rgba(0, 176, 236, 0.6),
-      inset 0 0 15px rgba(0, 176, 236, 0.2);
+    box-shadow: 0 0 18px rgba(0, 176, 236, 0.6), inset 0 0 15px rgba(0, 176, 236, 0.2);
     animation: gelombangFrekuensi 3s ease-out infinite;
     animation-delay: 1.5s;
     z-index: 0;
@@ -124,216 +91,42 @@
   }
 
   /* ================= TICKER PENGUMUMAN ================= */
-  .ticker-wrap {
-    background: #00b5f1;
-    color: #fff;
-    padding: 8px 0;
-    overflow: hidden;
-  }
-
-  .ticker-inner {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 16px;
-  }
-
-  .ticker-label {
-    background: #003c69;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 700;
-    white-space: nowrap;
-    letter-spacing: 0.5px;
-  }
-
-  .ticker-content {
-    flex: 1;
-    overflow: hidden;
-    white-space: nowrap;
-    font-size: 13px;
-    font-weight: 500;
-  }
-
-  .ticker-content span {
-    display: inline-block;
-    padding-left: 100%;
-    animation: tickerScroll 25s linear infinite;
-  }
-
-  @keyframes tickerScroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
-  }
+  .ticker-wrap { background: #00b5f1; color: #fff; padding: 8px 0; overflow: hidden; }
+  .ticker-inner { display: flex; align-items: center; gap: 12px; padding: 0 16px; }
+  .ticker-label { background: #003c69; padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; letter-spacing: 0.5px; }
+  .ticker-content { flex: 1; overflow: hidden; white-space: nowrap; font-size: 13px; font-weight: 500; }
+  .ticker-content span { display: inline-block; padding-left: 100%; animation: tickerScroll 25s linear infinite; }
+  @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
   /* ================= LAYANAN CEPAT ================= */
-  .layanan-card {
-    background: #f0f7fc;
-    border-radius: 14px;
-    padding: 22px 14px;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    border: 1px solid transparent;
-  }
-
-  .layanan-card:hover {
-    background: #003c69;
-    transform: translateY(-5px);
-    box-shadow: 0 10px 22px rgba(0,60,105,0.2);
-    border-color: #00b5f1;
-  }
-
-  .layanan-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: #00b5f1;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    margin: 0 auto 12px;
-    transition: transform 0.3s ease;
-  }
-
-  .layanan-card:hover .layanan-icon {
-    transform: scale(1.1);
-    background: #00d4ff;
-  }
-
-  .layanan-title {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #003c69;
-    transition: color 0.3s ease;
-  }
-
-  .layanan-card:hover .layanan-title {
-    color: #fff;
-  }
-
-  @media (min-width: 768px) {
-    .layanan-title { font-size: 0.95rem; }
-    .layanan-icon { width: 60px; height: 60px; font-size: 22px; }
-  }
+  .layanan-card { background: #f0f7fc; border-radius: 14px; padding: 22px 14px; text-align: center; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid transparent; }
+  .layanan-card:hover { background: #003c69; transform: translateY(-5px); box-shadow: 0 10px 22px rgba(0,60,105,0.2); border-color: #00b5f1; }
+  .layanan-icon { width: 52px; height: 52px; border-radius: 50%; background: #00b5f1; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; margin: 0 auto 12px; transition: transform 0.3s ease; }
+  .layanan-card:hover .layanan-icon { transform: scale(1.1); background: #00d4ff; }
+  .layanan-title { font-size: 0.85rem; font-weight: 700; color: #003c69; transition: color 0.3s ease; }
+  .layanan-card:hover .layanan-title { color: #fff; }
+  @media (min-width: 768px) { .layanan-title { font-size: 0.95rem; } .layanan-icon { width: 60px; height: 60px; font-size: 22px; } }
 
   /* ================= PETA ================= */
   #map { z-index: 0; }
 
   /* ================= INSTAGRAM EMBED ================= */
-
-  .igPostSwiper {
-    width: 100%;
-    max-width: 1100px;
-    overflow: hidden;
-    margin: 0 auto;
-    padding: 12px 5px 20px;
-  }
-
-  .igPostSwiper .swiper-slide {
-    height: auto;
-  }
-
-  .ig-post-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 8px;
-    box-shadow: 0 3px 12px rgba(0,60,105,0.10);
-    height: 100%;
-    max-width: 320px;
-    margin: 0 auto;
-    overflow: hidden;
-    animation: igFloat 3s ease-in-out infinite;
-    transition: box-shadow 0.3s ease;
-  }
-
-  /* Animasi naik turun */
-  @keyframes igFloat {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-9px);
-    }
-  }
-
-  /* Animasi setiap postingan berbeda */
-  .ig-post-card:nth-child(1) {
-    animation-delay: 0s;
-  }
-
-  .ig-post-card:nth-child(2) {
-    animation-delay: 0.5s;
-  }
-
-  .ig-post-card:nth-child(3) {
-    animation-delay: 1s;
-  }
-
-  .ig-post-card:hover {
-    animation-play-state: paused;
-    box-shadow: 0 8px 20px rgba(0,60,105,0.18);
-  }
-
-  .ig-post-card .instagram-media {
-    min-width: 0 !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    margin: 0 auto !important;
-  }
-
-  .ig-pagination {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .ig-pagination .swiper-pagination-bullet {
-    background: #003c69;
-    opacity: 0.4;
-  }
-
-  .ig-pagination .swiper-pagination-bullet-active {
-    background: #00b5f1;
-    opacity: 1;
-  }
-
-  .ig-prev,
-  .ig-next {
-    background: #003c69;
-    color: white;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    transition: 0.3s;
-    border: none;
-    cursor: pointer;
-  }
-
-  .ig-prev:hover,
-  .ig-next:hover {
-    background: #00b5f1;
-  }
-
-  @media (max-width: 640px) {
-    .ig-post-card {
-      padding: 6px;
-      max-width: 340px;
-    }
-
-    .igPostSwiper {
-      padding: 10px 0 18px;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .ig-post-card {
-      animation: none;
-    }
-  }
+  .igPostSwiper { width: 100%; max-width: 1100px; overflow: hidden; margin: 0 auto; padding: 12px 5px 20px; }
+  .igPostSwiper .swiper-slide { height: auto; }
+  .ig-post-card { background: #fff; border-radius: 12px; padding: 8px; box-shadow: 0 3px 12px rgba(0,60,105,0.10); height: 100%; max-width: 320px; margin: 0 auto; overflow: hidden; animation: igFloat 3s ease-in-out infinite; transition: box-shadow 0.3s ease; }
+  @keyframes igFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+  .ig-post-card:nth-child(1) { animation-delay: 0s; }
+  .ig-post-card:nth-child(2) { animation-delay: 0.5s; }
+  .ig-post-card:nth-child(3) { animation-delay: 1s; }
+  .ig-post-card:hover { animation-play-state: paused; box-shadow: 0 8px 20px rgba(0,60,105,0.18); }
+  .ig-post-card .instagram-media { min-width: 0 !important; max-width: 100% !important; width: 100% !important; margin: 0 auto !important; }
+  .ig-pagination { display: flex; justify-content: center; gap: 8px; }
+  .ig-pagination .swiper-pagination-bullet { background: #003c69; opacity: 0.4; }
+  .ig-pagination .swiper-pagination-bullet-active { background: #00b5f1; opacity: 1; }
+  .ig-prev, .ig-next { background: #003c69; color: white; width: 38px; height: 38px; border-radius: 50%; transition: 0.3s; border: none; cursor: pointer; }
+  .ig-prev:hover, .ig-next:hover { background: #00b5f1; }
+  @media (max-width: 640px) { .ig-post-card { padding: 6px; max-width: 340px; } .igPostSwiper { padding: 10px 0 18px; } }
+  @media (prefers-reduced-motion: reduce) { .ig-post-card { animation: none; } }
 
 </style>
 {% endblock style %} 
@@ -350,7 +143,6 @@
     </div>
     {% endfor %}
   </div>
-
   <div class="swiper-button-next hidden md:flex"></div>
   <div class="swiper-button-prev hidden md:flex"></div>
   <div class="swiper-pagination"></div>
@@ -363,7 +155,6 @@
     <span class="ticker-label">
       <i class="fa-solid fa-bullhorn mr-1"></i> INFO
     </span>
-
     <div class="ticker-content">
       <span>
         Selamat datang di website resmi Balmon SFR Kelas I Mataram •
@@ -377,25 +168,14 @@
 
 <!-- ================= 3. SAMBUTAN KEPALA ================= -->
 <div id="tentang-kami" class="bg-[#003c69] lg:flex lg:p-[80px] md:p-[80px] p-[30px] items-center gap-10 overflow-hidden">
-
   <div class="logo lg:w-1/3 w-full flex justify-center mb-8 lg:mb-0 fade-in-left">
     <div class="kabalmon-wrapper">
-      <img src="{% static 'img/kabalmon.png' %}"
-           class="kabalmon-float w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] object-contain relative z-10 drop-shadow-2xl"
-           alt="Kepala Balmon">
+      <img src="{% static 'img/kabalmon.png' %}" class="kabalmon-float w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] object-contain relative z-10 drop-shadow-2xl" alt="Kepala Balmon">
     </div>
   </div>
-
   <div class="text lg:w-2/3 w-full text-[#00b0ec] sambutan-text fade-in-right">
-
-    <h1 class="text-2xl md:text-3xl font-bold text-[#00b0ec]">
-      Sambutan Kepala
-    </h1>
-
-    <h3 class="text-lg md:text-xl font-semibold text-[#00b0ec] mt-2 mb-4">
-      Balai Monitoring Spektrum Frekuensi Radio Kelas I Mataram
-    </h3>
-
+    <h1 class="text-2xl md:text-3xl font-bold text-[#00b0ec]">Sambutan Kepala</h1>
+    <h3 class="text-lg md:text-xl font-semibold text-[#00b0ec] mt-2 mb-4">Balai Monitoring Spektrum Frekuensi Radio Kelas I Mataram</h3>
     <p class="text-justify text-sm md:text-base leading-relaxed text-[#fff]">
       Balmon SFR Kelas I Mataram merupakan Unit Pelaksana Teknis di lingkungan
       Direktorat Jenderal Infrastruktur Digital (DJID), Kementerian Komunikasi
@@ -403,58 +183,42 @@
       di bidang penggunaan spektrum frekuensi radio dan alat/perangkat
       telekomunikasi di wilayah Nusa Tenggara Barat.
     </p>
-
   </div>
 </div>
 
 
 <!-- ================= 4. LAYANAN CEPAT ================= -->
-<!-- ================= 4. LAYANAN CEPAT ================= -->
 <div class="bg-[#f0f7fc] py-10 md:py-14 px-4 md:px-6">
   <div class="max-w-6xl mx-auto">
-
     <div class="text-center mb-8">
-      <h2 class="text-xl md:text-2xl font-bold text-[#003c69]">
-        LAYANAN CEPAT
-      </h2>
-
+      <h2 class="text-xl md:text-2xl font-bold text-[#003c69]">LAYANAN CEPAT</h2>
       <div class="w-[50px] h-[4px] bg-[#00b5f1] mx-auto mt-2 rounded"></div>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-
-      <!-- 1. Perizinan -> izin-amatir-radio.html -->
-      <a href="/izin-amatir-radio/" class="layanan-card">
-        <div class="layanan-icon">
-          <i class="fa-solid fa-file-signature"></i>
-        </div>
-        <p class="layanan-title">Perizinan</p>
+      <!-- 1. Perizinan -> izin-amatir-radio -->
+      <a href="/layanan/izin-amatir-radio/" class="layanan-card">
+        <div class="layanan-icon"><i class="fa-solid fa-file-signature"></i></div>
+        <p class="layanan-title">Perizinan amatir radio</p>
       </a>
 
-      <!-- 2. Monitoring -> izin-stasiun.html (atau ujian-negara-amatir) -->
-      <a href="/izin-stasiun/" class="layanan-card">
-        <div class="layanan-icon">
-          <i class="fa-solid fa-tower-broadcast"></i>
-        </div>
-        <p class="layanan-title">Monitoring</p>
+      <!-- 2. Monitoring -> izin-stasiun-radio -->
+      <a href="/layanan/izin-stasiun-radio/" class="layanan-card">
+        <div class="layanan-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
+        <p class="layanan-title">Izin Stasiun Radio</p>
       </a>
 
-      <!-- 3. Pengaduan -> layanan-pengaduan.html -->
-      <a href="/layanan-pengaduan/" class="layanan-card">
-        <div class="layanan-icon">
-          <i class="fa-solid fa-bullhorn"></i>
-        </div>
+      <!-- 3. Pengaduan -> layanan-pengaduan -->
+      <a href="/layanan/layanan-pengaduan/" class="layanan-card">
+        <div class="layanan-icon"><i class="fa-solid fa-bullhorn"></i></div>
         <p class="layanan-title">Pengaduan</p>
       </a>
 
-      <!-- 4. Konsultasi -> serena.html -->
-      <a href="/serena/" class="layanan-card">
-        <div class="layanan-icon">
-          <i class="fa-solid fa-circle-question"></i>
-        </div>
-        <p class="layanan-title">Konsultasi</p>
+      <!-- 4. Konsultasi -> SERENA -->
+      <a href="/layanan/SERENA/" class="layanan-card">
+        <div class="layanan-icon"><i class="fa-solid fa-circle-question"></i></div>
+        <p class="layanan-title">Layanan SERENA</p>
       </a>
-
     </div>
   </div>
 </div>
@@ -462,64 +226,32 @@
 
 <!-- ================= 5. BERITA TERKINI ================= -->
 <div id="berita-terkini" class="bg-white py-10 md:py-14 px-4 md:px-6">
-
   <div class="max-w-6xl mx-auto">
-
     <div class="flex items-end justify-between mb-6">
-
       <div>
-        <h2 class="text-xl md:text-2xl font-bold text-[#003c69]">
-          BERITA TERKINI
-        </h2>
-
+        <h2 class="text-xl md:text-2xl font-bold text-[#003c69]">BERITA TERKINI</h2>
         <div class="w-[50px] h-[4px] bg-[#00b5f1] mt-2 rounded"></div>
       </div>
-
-      <a href="/blog/artikel"
-         class="text-sm font-semibold text-[#00b5f1] hover:text-[#003c69] transition">
+      <a href="/blog/artikel" class="text-sm font-semibold text-[#00b5f1] hover:text-[#003c69] transition">
         Lihat Semua <i class="fa-solid fa-arrow-right ml-1"></i>
       </a>
-
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-
       {% for post in postingan|slice:":3" %}
-
-      <a href="/blog/artikel/{{post.slug}}"
-         class="group bg-[#f0f7fc] rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300">
-
+      <a href="/blog/artikel/{{post.slug}}" class="group bg-[#f0f7fc] rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300">
         <div class="overflow-hidden">
-          <img src="{{post.image.url}}"
-               alt="{{post.title}}"
-               class="w-full h-[180px] object-cover group-hover:scale-110 duration-500">
+          <img src="{{post.image.url}}" alt="{{post.title}}" class="w-full h-[180px] object-cover group-hover:scale-110 duration-500">
         </div>
-
         <div class="p-4">
-
-          <p class="text-xs text-gray-500 mb-2">
-            <i class="fa-regular fa-calendar mr-1"></i> {{post.tanggal}}
-          </p>
-
-          <h3 class="font-bold text-[#003c69] text-base md:text-lg leading-snug line-clamp-2 group-hover:text-[#00b5f1] transition">
-            {{post.title}}
-          </h3>
-
-          <p class="text-sm text-gray-600 mt-2 line-clamp-3">
-            {{post.body}}
-          </p>
-
+          <p class="text-xs text-gray-500 mb-2"><i class="fa-regular fa-calendar mr-1"></i> {{post.tanggal}}</p>
+          <h3 class="font-bold text-[#003c69] text-base md:text-lg leading-snug line-clamp-2 group-hover:text-[#00b5f1] transition">{{post.title}}</h3>
+          <p class="text-sm text-gray-600 mt-2 line-clamp-3">{{post.body}}</p>
         </div>
       </a>
-
       {% empty %}
-
-      <p class="text-gray-500 col-span-full text-center">
-        Belum ada berita.
-      </p>
-
+      <p class="text-gray-500 col-span-full text-center">Belum ada berita.</p>
       {% endfor %}
-
     </div>
   </div>
 </div>
@@ -535,53 +267,25 @@
 
 <!-- ================= 7. MEDIA INFRASTRUKTUR DIGITAL ================= -->
 <div id="infrastruktur" class="lg:p-[80px] md:p-[50px] p-[30px]">
-
   <div class="infrastruktur-headline text-center mb-8">
-
-    <h2 class="text-2xl md:text-3xl font-bold text-[#003c69]">
-      MEDIA INFRASTRUKTUR DIGITAL
-    </h2>
-
+    <h2 class="text-2xl md:text-3xl font-bold text-[#003c69]">MEDIA INFRASTRUKTUR DIGITAL</h2>
     <div class="w-[50px] h-[4px] bg-[#00b5f1] mx-auto mt-2"></div>
-
   </div>
-
 
   <!-- ================= INSTAGRAM BALMON MATARAM ================= -->
   <div class="max-w-6xl mx-auto mb-12">
-
     <div class="text-center mb-6">
-
-      <h3 class="text-xl md:text-2xl font-bold text-[#003c69]">
-        <i class="fa-brands fa-instagram mr-2"></i>
-        INSTAGRAM BALMON MATARAM
-      </h3>
-
-      <p class="text-sm text-gray-500 mt-2">
-        Informasi dan dokumentasi kegiatan Balmon Mataram
-      </p>
-
-      <a href="https://www.instagram.com/balmonmataram/"
-         target="_blank"
-         rel="noopener noreferrer"
-         class="text-[#00b5f1] font-semibold text-sm hover:text-[#003c69]">
-        @balmonmataram
-      </a>
-
+      <h3 class="text-xl md:text-2xl font-bold text-[#003c69]"><i class="fa-brands fa-instagram mr-2"></i> INSTAGRAM BALMON MATARAM</h3>
+      <p class="text-sm text-gray-500 mt-2">Informasi dan dokumentasi kegiatan Balmon Mataram</p>
+      <a href="https://www.instagram.com/balmonmataram/" target="_blank" rel="noopener noreferrer" class="text-[#00b5f1] font-semibold text-sm hover:text-[#003c69]">@balmonmataram</a>
     </div>
-
 
     <!-- SLIDER INSTAGRAM -->
     <div class="swiper igPostSwiper">
-
       <div class="swiper-wrapper">
-
-
-        <!-- ================= HALAMAN 1 ================= -->
+        <!-- HALAMAN 1 -->
         <div class="swiper-slide">
-
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
             <!-- POSTINGAN INSTAGRAM 1 -->
             <div class="ig-post-card">
              <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/reel/Debb9rkt_WL/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/reel/Debb9rkt_WL/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">Lihat postingan ini di Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a><p style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;"><a href="https://www.instagram.com/reel/Debb9rkt_WL/?utm_source=ig_embed&amp;utm_campaign=loading" style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;" target="_blank">Sebuah kiriman dibagikan oleh Direktorat Jenderal Infrastruktur Digital Komdigi (@infrastrukturdigital)</a></p></div>
@@ -606,9 +310,7 @@
 
         <!-- ================= HALAMAN 2 ================= -->
         <div class="swiper-slide">
-
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
             <!-- POSTINGAN INSTAGRAM 4 -->
             <div class="ig-post-card">
               <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/Dfny6FekkCw/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/p/Dfny6FekkCw/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">Lihat postingan ini di Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a><p style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;"><a href="https://www.instagram.com/p/Dfny6FekkCw/?utm_source=ig_embed&amp;utm_campaign=loading" style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;" target="_blank">Sebuah kiriman dibagikan oleh balmon mataram (@balmon.mataram)</a></p></div>
@@ -623,12 +325,8 @@
 
             <!-- POSTINGAN INSTAGRAM 6 -->
             <div class="ig-post-card">
-              <blockquote class="instagram-media"
-                data-instgrm-captioned
-                data-instgrm-permalink="https://www.instagram.com/p/DfYZ4UXmAX8/"
-                data-instgrm-version="14"
-                style="width:100%; margin:0 auto;">
-              </blockquote>
+              <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DfYZ4UXmAX8/" data-instgrm-version="14" style="width:100%; margin:0 auto;">
+              </blockquote><script async src="//www.instagram.com/embed.js"></script>
             </div>
 
           </div>
@@ -636,373 +334,169 @@
 
       </div>
 
-
       <!-- NAVIGASI SLIDER INSTAGRAM -->
       <div class="flex justify-center items-center gap-4 mt-6">
-
-        <button type="button" class="ig-prev">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-
+        <button type="button" class="ig-prev"><i class="fa-solid fa-chevron-left"></i></button>
         <div class="ig-pagination"></div>
-
-        <button type="button" class="ig-next">
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
-
+        <button type="button" class="ig-next"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
-
     </div>
-
 
     <!-- FOLLOW INSTAGRAM -->
     <div class="text-center mt-6">
-
-      <a href="https://www.instagram.com/balmonmataram/"
-         target="_blank"
-         rel="noopener noreferrer"
-         class="inline-flex items-center gap-2 px-6 py-2 bg-[#00b5f1] text-white font-semibold rounded hover:bg-[#003c69] duration-300 transition">
-
-        <i class="fa-brands fa-instagram"></i>
-        Follow Instagram
-
+      <a href="https://www.instagram.com/balmonmataram/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-2 bg-[#00b5f1] text-white font-semibold rounded hover:bg-[#003c69] duration-300 transition">
+        <i class="fa-brands fa-instagram"></i> Follow Instagram
       </a>
-
     </div>
-
   </div>
-
 
 
   <!-- ================= SLIDER BERITA INFRASTRUKTUR ================= -->
   <div class="swiper mySwiper mt-4 swiper-card">
-
     <div class="swiper-wrapper">
-
       {% for post in postingan %}
-
       <div class="swiper-slide bg-[#003c69] rounded-lg p-[20px] text-[#fff] flex flex-col h-auto">
-
         <a href="/blog/artikel/{{post.slug}}">
-
           <div class="overflow-hidden rounded-lg">
-
-            <img src="{{post.image.url}}"
-                 alt=""
-                 class="h-[200px] w-full object-cover rounded-lg hover:scale-110 duration-300" />
-
+            <img src="{{post.image.url}}" alt="" class="h-[200px] w-full object-cover rounded-lg hover:scale-110 duration-300" />
           </div>
-
         </a>
-
         <a href="/blog/artikel/{{post.slug}}">
-
-          <h4 class="pt-[15px] font-bold text-lg md:text-xl">
-            {{post.title}}
-          </h4>
-
+          <h4 class="pt-[15px] font-bold text-lg md:text-xl">{{post.title}}</h4>
         </a>
-
-        <p class="text-xs text-gray-300 mt-1">
-          {{post.tanggal}}
-        </p>
-
-        <p class="text-sm mt-2 overflow-hidden text-ellipsis line-clamp-4 text-justify">
-          {{post.body}}
-        </p>
-
+        <p class="text-xs text-gray-300 mt-1">{{post.tanggal}}</p>
+        <p class="text-sm mt-2 overflow-hidden text-ellipsis line-clamp-4 text-justify">{{post.body}}</p>
       </div>
-
       {% endfor %}
-
     </div>
-
     <div class="swiper-pagination mt-4"></div>
-
   </div>
-
 
   <div class="text-center mt-6">
-
     <a href="/blog/artikel">
-
-      <button type="button"
-              class="text-[#ffffff] px-6 py-2 bg-[#00b5f1] rounded font-semibold hover:bg-[#003c69] hover:text-[#00b5f1] duration-300 ease-in-out">
-
+      <button type="button" class="text-[#ffffff] px-6 py-2 bg-[#00b5f1] rounded font-semibold hover:bg-[#003c69] hover:text-[#00b5f1] duration-300 ease-in-out">
         Cek Selengkapnya
-
       </button>
-
     </a>
-
   </div>
-
 </div>
-
 
 
 <!-- ================= 8. PETA LOKASI ================= -->
 <div class="bg-white py-10 md:py-14 px-4 md:px-6">
-
   <div class="max-w-6xl mx-auto">
-
     <div class="text-center mb-8">
-
-      <h2 class="text-xl md:text-2xl font-bold text-[#003c69]">
-        LOKASI KANTOR
-      </h2>
-
+      <h2 class="text-xl md:text-2xl font-bold text-[#003c69]">LOKASI KANTOR</h2>
       <div class="w-[50px] h-[4px] bg-[#00b5f1] mx-auto mt-2 rounded"></div>
-
     </div>
-
     <div id="map" class="w-full h-[280px] md:h-[400px] rounded-xl shadow-lg overflow-hidden"></div>
-
   </div>
-
 </div>
-
 
 
 <!-- ================= 9. LINK TERKAIT ================= -->
 <div id="link-terkait" class="bg-[#003c69] lg:p-[80px] md:p-[50px] p-[30px]">
-
   <div class="text-[#fff] text-center mb-8">
-
-    <h2 class="text-2xl md:text-3xl font-bold">
-      LINK TERKAIT
-    </h2>
-
+    <h2 class="text-2xl md:text-3xl font-bold">LINK TERKAIT</h2>
     <div class="w-[50px] h-[4px] my-[10px] mx-auto bg-[#00b5f1] rounded"></div>
-
   </div>
-
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 pt-4">
-
     <div class="rounded-[20px] overflow-hidden hover:scale-105 ease-in duration-300 shadow-lg">
-
       <a href="https://pelayanansdppi.postel.go.id/" target="_blank">
-
-        <img src="{% static 'img/layanan.png' %}"
-             alt="Layanan"
-             class="w-full h-auto object-cover">
-
+        <img src="{% static 'img/layanan.png' %}" alt="Layanan" class="w-full h-auto object-cover">
       </a>
-
     </div>
-
-
     <div class="rounded-[20px] overflow-hidden hover:scale-105 ease-in duration-300 shadow-lg">
-
       <a href="https://sidia.postel.go.id/" target="_blank">
-
-        <img src="{% static 'img/digital-asistant.png' %}"
-             alt="Digital Assistant"
-             class="w-full h-auto object-cover">
-
+        <img src="{% static 'img/digital-asistant.png' %}" alt="Digital Assistant" class="w-full h-auto object-cover">
       </a>
-
     </div>
-
-
     <div class="rounded-[20px] overflow-hidden hover:scale-105 ease-in duration-300 shadow-lg">
-
       <a href="https://www.postel.go.id/sdppi_maps/" target="_blank">
-
-        <img src="{% static 'img/maps.png' %}"
-             alt="Maps"
-             class="w-full h-auto object-cover">
-
+        <img src="{% static 'img/maps.png' %}" alt="Maps" class="w-full h-auto object-cover">
       </a>
-
     </div>
-
-
     <div class="rounded-[20px] overflow-hidden hover:scale-105 ease-in duration-300 shadow-lg">
-
       <a href="https://ifasfest.id/" target="_blank">
-
-        <img src="{% static 'img/kolaborasi.png' %}"
-             alt="Kolaborasi"
-             class="w-full h-auto object-cover">
-
+        <img src="{% static 'img/kolaborasi.png' %}" alt="Kolaborasi" class="w-full h-auto object-cover">
       </a>
-
     </div>
-
   </div>
-
 </div>
-
 
 
 <!-- ================= 10. PUBLIKASI ================= -->
 <div id="publikasi" class="bg-[#00508c] lg:p-[80px] md:p-[50px] p-[30px]">
-
   <div class="text-[#fff] text-center mb-8">
-
-    <h2 class="text-2xl md:text-3xl font-bold">
-      PUBLIKASI
-    </h2>
-
+    <h2 class="text-2xl md:text-3xl font-bold">PUBLIKASI</h2>
     <div class="w-[50px] h-[4px] my-[10px] mx-auto bg-[#003c69] rounded"></div>
-
   </div>
-
 
   <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pt-4">
-
-
     <div class="flex flex-col">
-
       <div class="rounded-lg overflow-hidden shadow-md group">
-
         <a href="https://postel.go.id/publikasi-lakip-59" target="_blank">
-
-          <img src="{% static 'img/kinerja.png' %}"
-               alt="LAPKIN"
-               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
-
+          <img src="{% static 'img/kinerja.png' %}" alt="LAPKIN" class="w-full h-auto object-cover group-hover:scale-110 duration-300">
         </a>
-
       </div>
-
-      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded">
-        LAPKIN
-      </p>
-
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded">LAPKIN</p>
     </div>
 
-
     <div class="flex flex-col">
-
       <div class="rounded-lg overflow-hidden shadow-md group">
-
         <a href="https://postel.go.id/publikasi-renstra-119" target="_blank">
-
-          <img src="{% static 'img/tekno.png' %}"
-               alt="RENSTRA"
-               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
-
+          <img src="{% static 'img/tekno.png' %}" alt="RENSTRA" class="w-full h-auto object-cover group-hover:scale-110 duration-300">
         </a>
-
       </div>
-
-      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded">
-        RENSTRA
-      </p>
-
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded">RENSTRA</p>
     </div>
 
-
     <div class="flex flex-col">
-
       <div class="rounded-lg overflow-hidden shadow-md group">
-
         <a href="https://postel.go.id/publikasi-hasil-survei-pelayanan-publik-69" target="_blank">
-
-          <img src="{% static 'img/survei.png' %}"
-               alt="SURVEI"
-               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
-
+          <img src="{% static 'img/survei.png' %}" alt="SURVEI" class="w-full h-auto object-cover group-hover:scale-110 duration-300">
         </a>
-
       </div>
-
-      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">
-        HASIL SURVEI
-      </p>
-
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">HASIL SURVEI</p>
     </div>
 
-
     <div class="flex flex-col">
-
       <div class="rounded-lg overflow-hidden shadow-md group">
-
         <a href="https://postel.go.id/publikasi-data-statistik-44" target="_blank">
-
-          <img src="{% static 'img/statistik.png' %}"
-               alt="STATISTIK"
-               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
-
+          <img src="{% static 'img/statistik.png' %}" alt="STATISTIK" class="w-full h-auto object-cover group-hover:scale-110 duration-300">
         </a>
-
       </div>
-
-      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">
-        DATA STATISTIK
-      </p>
-
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">DATA STATISTIK</p>
     </div>
 
-
     <div class="flex flex-col">
-
       <div class="rounded-lg overflow-hidden shadow-md group">
-
         <a href="https://postel.go.id/publikasi-surat-edaran-46" target="_blank">
-
-          <img src="{% static 'img/survei.png' %}"
-               alt="SURAT EDARAN"
-               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
-
+          <img src="{% static 'img/survei.png' %}" alt="SURAT EDARAN" class="w-full h-auto object-cover group-hover:scale-110 duration-300">
         </a>
-
       </div>
-
-      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">
-        SURAT EDARAN
-      </p>
-
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">SURAT EDARAN</p>
     </div>
 
-
     <div class="flex flex-col">
-
       <div class="rounded-lg overflow-hidden shadow-md group">
-
         <a href="https://postel.go.id/publikasi-laporan-tahunan-45" target="_blank">
-
-          <img src="{% static 'img/laptah.png' %}"
-               alt="LAPTAH"
-               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
-
+          <img src="{% static 'img/laptah.png' %}" alt="LAPTAH" class="w-full h-auto object-cover group-hover:scale-110 duration-300">
         </a>
-
       </div>
-
-      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">
-        LAPORAN TAHUNAN
-      </p>
-
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">LAPORAN TAHUNAN</p>
     </div>
-
 
     <div class="flex flex-col">
-
       <div class="rounded-lg overflow-hidden shadow-md group">
-
         <a href="https://postel.go.id/publikasi-lain-lain-35" target="_blank">
-
-          <img src="{% static 'img/survei.png' %}"
-               alt="LAIN-LAIN"
-               class="w-full h-auto object-cover group-hover:scale-110 duration-300">
-
+          <img src="{% static 'img/survei.png' %}" alt="LAIN-LAIN" class="w-full h-auto object-cover group-hover:scale-110 duration-300">
         </a>
-
       </div>
-
-      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">
-        LAIN-LAIN
-      </p>
-
+      <p class="bg-[#00b5f1] text-white text-xs md:text-sm text-center font-bold py-2 mt-2 rounded leading-tight">LAIN-LAIN</p>
     </div>
-
-
   </div>
-
 </div>
 
 {% endblock content %}
@@ -1010,233 +504,90 @@
 
 
 {% block script %}
-
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
 
-
 <!-- ================= 1. SCRIPT SLIDER BANNER ================= -->
 <script>
-
   var swiper2 = new Swiper(".swiper2", {
-
     spaceBetween: 0,
     centeredSlides: true,
     loop: true,
-
-    autoplay: {
-      delay: 3000,
-      disableOnInteraction: false
-    },
-
-    pagination: {
-      el: ".swiper2 .swiper-pagination",
-      clickable: true
-    },
-
-    navigation: {
-      nextEl: ".swiper2 .swiper-button-next",
-      prevEl: ".swiper2 .swiper-button-prev"
-    }
-
+    autoplay: { delay: 3000, disableOnInteraction: false },
+    pagination: { el: ".swiper2 .swiper-pagination", clickable: true },
+    navigation: { nextEl: ".swiper2 .swiper-button-next", prevEl: ".swiper2 .swiper-button-prev" }
   });
-
 </script>
-
-
 
 <!-- ================= 2. SCRIPT SLIDER MEDIA INFRASTRUKTUR ================= -->
 <script>
-
   var swiper = new Swiper(".mySwiper", {
-
     slidesPerView: 1,
     spaceBetween: 20,
     loop: true,
-
-    autoplay: {
-      delay: 4000,
-      disableOnInteraction: false
-    },
-
-    pagination: {
-      el: ".mySwiper .swiper-pagination",
-      clickable: true
-    },
-
+    autoplay: { delay: 4000, disableOnInteraction: false },
+    pagination: { el: ".mySwiper .swiper-pagination", clickable: true },
     breakpoints: {
-
-      640: {
-        slidesPerView: 1,
-        spaceBetween: 20
-      },
-
-      768: {
-        slidesPerView: 2,
-        spaceBetween: 30
-      },
-
-      1024: {
-        slidesPerView: 3,
-        spaceBetween: 30
-      }
-
+      640: { slidesPerView: 1, spaceBetween: 20 },
+      768: { slidesPerView: 2, spaceBetween: 30 },
+      1024: { slidesPerView: 3, spaceBetween: 30 }
     }
-
   });
-
 </script>
-
-
 
 <!-- ================= 3. SCRIPT SLIDER INSTAGRAM ================= -->
 <script>
-
   var igPostSwiper = new Swiper(".igPostSwiper", {
-
     slidesPerView: 1,
     spaceBetween: 20,
-
     loop: false,
     rewind: true,
-
     speed: 800,
-
-    autoplay: {
-      delay: 6000,
-      disableOnInteraction: false,
-      pauseOnMouseEnter: true
-    },
-
-    pagination: {
-      el: ".ig-pagination",
-      clickable: true
-    },
-
-    navigation: {
-      nextEl: ".ig-next",
-      prevEl: ".ig-prev"
-    }
-
+    autoplay: { delay: 6000, disableOnInteraction: false, pauseOnMouseEnter: true },
+    pagination: { el: ".ig-pagination", clickable: true },
+    navigation: { nextEl: ".ig-next", prevEl: ".ig-prev" }
   });
-
 </script>
-
-
 
 <!-- ================= 4. INSTAGRAM EMBED SCRIPT ================= -->
-<script async
-  src="https://www.instagram.com/embed.js"
-  onload="if(window.instgrm){window.instgrm.Embeds.process();}">
-</script>
-
-
+<script async src="https://www.instagram.com/embed.js" onload="if(window.instgrm){window.instgrm.Embeds.process();}"></script>
 
 <!-- ================= 5. SCRIPT PETA LOKASI ================= -->
 <script>
-
-  const map = L.map('map', {
-    scrollWheelZoom: false
-  }).setView([-8.5833, 116.1167], 13);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-
-    attribution: '&copy; OpenStreetMap contributors'
-
-  }).addTo(map);
-
-  L.marker([-8.5833, 116.1167]).addTo(map)
-
-    .bindPopup('<b>Balmon SFR Kelas I Mataram</b><br>Nusa Tenggara Barat')
-
-    .openPopup();
-
+  const map = L.map('map', { scrollWheelZoom: false }).setView([-8.5833, 116.1167], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+  L.marker([-8.5833, 116.1167]).addTo(map).bindPopup('<b>Balmon SFR Kelas I Mataram</b><br>Nusa Tenggara Barat').openPopup();
 </script>
-
-
 
 <!-- ================= SCRIPT NAVBAR MOBILE ================= -->
 <script>
-
   const navLinks = document.querySelector(".nav-links");
-
   function onToggleMenu(e) {
-
     e.name = e.name === "menu-outline" ? "close-outline" : "menu-outline";
-
     navLinks.classList.toggle("invisible");
-
   }
-
 </script>
-
-
 
 <!-- ================= SCRIPT DROPDOWN LAINNYA ================= -->
 <script>
-
   const navLinks2 = document.querySelector(".nav-links2");
-
-  function onToggleMenu2(e) {
-    navLinks2.classList.toggle("hidden");
-  }
-
-
+  function onToggleMenu2(e) { navLinks2.classList.toggle("hidden"); }
   const navLinks3 = document.querySelector(".nav-links3");
-
-  function onToggleMenu3(e) {
-    navLinks3.classList.toggle("hidden");
-  }
-
-
+  function onToggleMenu3(e) { navLinks3.classList.toggle("hidden"); }
   const navLinks4 = document.querySelector(".nav-links4");
-
-  function onToggleMenu4(e) {
-    navLinks4.classList.toggle("hidden");
-  }
-
-
+  function onToggleMenu4(e) { navLinks4.classList.toggle("hidden"); }
   const navLinks5 = document.querySelector(".nav-links5");
-
-  function onToggleMenu5(e) {
-    navLinks5.classList.toggle("hidden");
-  }
-
-
+  function onToggleMenu5(e) { navLinks5.classList.toggle("hidden"); }
   const navLinks6 = document.querySelector(".nav-links6");
-
-  function onToggleMenu6(e) {
-    navLinks6.classList.toggle("hidden");
-  }
-
-
+  function onToggleMenu6(e) { navLinks6.classList.toggle("hidden"); }
   const navLinks7 = document.querySelector(".nav-links7");
-
-  function onToggleMenu7(e) {
-    navLinks7.classList.toggle("hidden");
-  }
-
+  function onToggleMenu7(e) { navLinks7.classList.toggle("hidden"); }
 </script>
-
-
 
 <!-- ================= SCRIPT EKSTERNAL ================= -->
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-
-<script
-  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-  integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvR+Vc4jQkC+hVqc2pM8ODewa9r"
-  crossorigin="anonymous">
-</script>
-
-<script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-  integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
-  crossorigin="anonymous">
-</script>
-
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
 {% endblock script %}
