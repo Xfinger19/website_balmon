@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="{% static 'vendor/bootstrap.css' %}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
 <style>
   /* ================= ANIMASI KABALMON + GELOMBANG FREKUENSI ================= */
@@ -85,6 +84,287 @@
     .sambutan-text p { font-size: 0.875rem; line-height: 1.6; }
   }
 
+  /* ================================================================ */
+  /* WILAYAH KERJA - PETA INTERAKTIF (PUTIH & BIRU)                    */
+  /* ================================================================ */
+  .wk-eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    color: #00b5f1; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.3em; text-transform: uppercase;
+  }
+  .wk-eyebrow::before, .wk-eyebrow::after { content: ""; width: 38px; height: 1px; }
+  .wk-eyebrow::before { background: linear-gradient(90deg, transparent, #00b5f1); }
+  .wk-eyebrow::after { background: linear-gradient(270deg, transparent, #00b5f1); }
+  .wk-title { color: #fff; font-weight: 800; font-size: 1.6rem; line-height: 1.2; margin: 10px 0 0; letter-spacing: 0.01em; }
+  @media (min-width: 768px) { .wk-title { font-size: 2.1rem; } }
+  .wk-divider { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 14px auto 12px; color: #00b5f1; font-size: 9px; }
+  .wk-divider span { width: 70px; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7)); }
+  .wk-divider span:last-child { background: linear-gradient(270deg, transparent, rgba(255,255,255,0.7)); }
+  .wk-sub { color: #cfe3f3; font-size: 0.95rem; max-width: 560px; margin: 0 auto; }
+
+  /* Kartu utama: bingkai gradien putih-biru */
+  .wk-card {
+    position: relative; border-radius: 26px; padding: 10px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(226,242,252,0.96));
+    box-shadow: 0 34px 70px -24px rgba(0, 18, 40, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.55) inset;
+  }
+  .wk-card::before {
+    content: ""; position: absolute; inset: 0; border-radius: 26px; padding: 1.5px;
+    background: linear-gradient(135deg, #00b5f1, #ffffff 35%, #2577B4 65%, #00b5f1);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  .wk-inner { position: relative; border-radius: 18px; overflow: hidden; background: #f6fbff; }
+  .wk-inner::before {
+    content: ""; position: absolute; top: 0; left: -40%; width: 40%; height: 3px; z-index: 5;
+    background: linear-gradient(90deg, transparent, #00b5f1, #ffffff, #00b5f1, transparent);
+    animation: wkShimmer 4.5s ease-in-out infinite;
+  }
+  @keyframes wkShimmer { 0% { left: -40%; } 100% { left: 100%; } }
+
+  /* Tab filter pulau */
+  .wk-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 18px 14px 4px; background: linear-gradient(180deg, #ffffff, #f6fbff); }
+  .wk-tab {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 18px; border-radius: 999px; cursor: pointer;
+    font-size: 13px; font-weight: 700; color: #003c69;
+    background: #fff; border: 1px solid rgba(0, 60, 105, 0.18);
+    transition: all 0.3s ease;
+  }
+  .wk-tab:hover { border-color: #00b5f1; color: #00508c; transform: translateY(-1px); }
+  .wk-tab.active { background: linear-gradient(135deg, #00508c, #003c69); color: #fff; border-color: transparent; box-shadow: 0 8px 18px rgba(0, 60, 105, 0.3); }
+
+  .wk-grid { display: grid; grid-template-columns: 1fr; }
+  @media (min-width: 1024px) { .wk-grid { grid-template-columns: 1.75fr 1fr; } }
+
+  /* Area peta */
+  .wk-mapwrap {
+    position: relative; padding: 18px 14px 14px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 300px;
+    background:
+      radial-gradient(circle at 18% 58%, rgba(0, 181, 241, 0.20), transparent 48%),
+      radial-gradient(circle at 88% 28%, rgba(0, 80, 140, 0.10), transparent 45%),
+      repeating-linear-gradient(0deg, rgba(0, 60, 105, 0.045) 0 1px, transparent 1px 36px),
+      repeating-linear-gradient(90deg, rgba(0, 60, 105, 0.045) 0 1px, transparent 1px 36px),
+      linear-gradient(180deg, #ffffff, #e9f5fc);
+    perspective: 1200px;
+  }
+  .wk-stage { width: 100%; max-width: 900px; animation: floatKabalmon 7s ease-in-out infinite; }
+  .wk-tilt { position: relative; transform-style: preserve-3d; transition: transform 0.2s ease-out; will-change: transform; }
+  .wk-mapbox { position: relative; width: 100%; aspect-ratio: 768 / 342; }
+  .wk-mapbox > img { width: 100%; height: 100%; display: block; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+
+  /* Sorotan pulau (memutihkan area di luar pulau terpilih) */
+  .wk-spot { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity 0.6s ease; }
+  .wk-mapwrap[data-filter="lombok"] .wk-spot {
+    opacity: 1;
+    background: radial-gradient(ellipse 18% 44% at 19% 58%, transparent 0 68%, rgba(241, 249, 255, 0.86) 100%);
+  }
+  .wk-mapwrap[data-filter="sumbawa"] .wk-spot {
+    opacity: 1;
+    background: radial-gradient(ellipse 46% 42% at 62% 62%, transparent 0 68%, rgba(241, 249, 255, 0.86) 100%);
+  }
+
+  /* Titik wilayah */
+  .wk-dot {
+    position: absolute; transform: translate(-50%, -50%);
+    width: 26px; height: 26px; padding: 0; border: 0; background: transparent;
+    cursor: pointer; z-index: 4; transition: opacity 0.4s ease, filter 0.4s ease;
+  }
+  .wk-dot span {
+    display: block; width: 12px; height: 12px; margin: 7px; border-radius: 50%;
+    background: #003c69; border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 60, 105, 0.4);
+    animation: wkPing 2.6s infinite;
+    transition: transform 0.25s ease, background 0.25s ease;
+  }
+  .wk-dot:hover span, .wk-dot.is-hover span, .wk-dot:focus-visible span { background: #00b5f1; transform: scale(1.45); }
+  .wk-dot.is-active span { background: #00b5f1; transform: scale(1.7); box-shadow: 0 0 0 4px rgba(0, 181, 241, 0.3), 0 4px 10px rgba(0, 60, 105, 0.45); }
+  .wk-dot:focus-visible { outline: 2px solid #00b5f1; outline-offset: 2px; border-radius: 50%; }
+  .wk-dot.is-dim { opacity: 0.22; filter: grayscale(1); pointer-events: none; }
+  .wk-dot::after {
+    content: attr(data-name);
+    position: absolute; bottom: 125%; left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    background: linear-gradient(135deg, #00508c, #003c69); color: #fff;
+    font-size: 11px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;
+    padding: 6px 10px; border-radius: 8px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: 0.22s ease;
+    box-shadow: 0 8px 18px rgba(0, 60, 105, 0.35);
+  }
+  .wk-dot:hover::after, .wk-dot.is-hover::after, .wk-dot.is-active::after, .wk-dot:focus-visible::after {
+    opacity: 1; transform: translateX(-50%) translateY(0);
+  }
+  @keyframes wkPing {
+    0%   { box-shadow: 0 0 0 0 rgba(0, 181, 241, 0.6), 0 2px 6px rgba(0, 60, 105, 0.4); }
+    70%  { box-shadow: 0 0 0 11px rgba(0, 181, 241, 0), 0 2px 6px rgba(0, 60, 105, 0.4); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 181, 241, 0), 0 2px 6px rgba(0, 60, 105, 0.4); }
+  }
+
+  /* Pin Balmon Mataram */
+  .wk-pin {
+    position: absolute; transform: translate(-50%, -50%);
+    width: 48px; height: 48px; padding: 0; border: 0; background: transparent;
+    cursor: pointer; z-index: 6; transition: opacity 0.4s ease, filter 0.4s ease;
+  }
+  .wk-pin.is-dim { opacity: 0.25; filter: grayscale(1); }
+  .wk-pin .ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 2px solid rgba(0, 181, 241, 0.95);
+    box-shadow: 0 0 12px rgba(0, 200, 255, 0.7);
+    animation: gelombangFrekuensi 2.6s ease-out infinite; pointer-events: none;
+  }
+  .wk-pin .ring.r2 { animation-delay: 1.3s; }
+  .wk-pin .core {
+    position: absolute; inset: 10px; border-radius: 50%;
+    background: linear-gradient(135deg, #00b5f1, #003c69); color: #fff; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #fff; box-shadow: 0 4px 12px rgba(0, 60, 105, 0.55);
+    transition: transform 0.25s ease;
+  }
+  .wk-pin:hover .core, .wk-pin.is-hover .core, .wk-pin:focus-visible .core { transform: scale(1.25); }
+  .wk-pin.is-active .core { transform: scale(1.3); box-shadow: 0 0 0 4px rgba(0, 181, 241, 0.35), 0 4px 12px rgba(0, 60, 105, 0.55); }
+  .wk-pin:focus-visible { outline: 2px solid #003c69; outline-offset: 3px; border-radius: 50%; }
+  .wk-pin .tag {
+    position: absolute; left: -10px; bottom: calc(100% + 4px);
+    background: linear-gradient(135deg, #00508c, #003c69); color: #fff;
+    font-size: 11px; font-weight: 700; line-height: 1;
+    padding: 7px 11px; border-radius: 999px; white-space: nowrap;
+    box-shadow: 0 8px 18px rgba(0, 60, 105, 0.4);
+    animation: wkBob 2s ease-in-out infinite;
+  }
+  .wk-pin .tag::after { content: ""; position: absolute; left: 18px; top: 100%; border: 5px solid transparent; border-top-color: #003c69; }
+  @keyframes wkBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+  .wk-hint { margin-top: 10px; font-size: 12.5px; font-weight: 600; color: #00508c; text-align: center; animation: wkHint 2.4s ease-in-out infinite; }
+  @keyframes wkHint { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+
+  /* Panel samping (biru) */
+  .wk-side {
+    position: relative; overflow: hidden; color: #fff;
+    padding: 22px; display: flex; flex-direction: column; gap: 18px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(0, 181, 241, 0.30), transparent 50%),
+      linear-gradient(160deg, #00508c, #003c69 58%, #002846);
+  }
+  .wk-side-label { font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #8fd8f5; }
+  .wk-info {
+    border-radius: 16px; padding: 16px 18px;
+    background: rgba(255, 255, 255, 0.09); border: 1px solid rgba(255, 255, 255, 0.22);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    min-height: 118px;
+  }
+  .wk-info.swap { animation: wkSwap 0.45s ease; }
+  @keyframes wkSwap { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .wk-info-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+    padding: 4px 10px; border-radius: 999px; background: #ffffff; color: #003c69;
+  }
+  .wk-info h5 { margin: 10px 0 4px; font-size: 1.25rem; font-weight: 800; line-height: 1.25; color: #ffffff; }
+  .wk-info p { margin: 0; font-size: 13px; line-height: 1.55; color: #d6e9f7; text-align: left; }
+
+  .wk-group-title { font-size: 12px; font-weight: 700; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .wk-group-title::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.35), transparent); }
+  .wk-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .wk-chip {
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    font-size: 12px; font-weight: 600; color: #ffffff;
+    padding: 6px 12px; border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.24);
+    transition: all 0.25s ease;
+  }
+  .wk-chip:hover, .wk-chip.is-hover { background: #ffffff; color: #003c69; border-color: #ffffff; transform: translateY(-1px); }
+  .wk-chip.is-active { background: linear-gradient(135deg, #00b5f1, #2577B4); border-color: #ffffff; color: #ffffff; box-shadow: 0 6px 16px rgba(0, 181, 241, 0.4); }
+  .wk-chip.is-dim { opacity: 0.3; pointer-events: none; }
+  .wk-chip:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; }
+
+  .wk-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .wk-stat { text-align: center; padding: 10px 4px; border-radius: 12px; background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.16); }
+  .wk-stat b { display: block; font-size: 1.5rem; font-weight: 800; color: #ffffff; line-height: 1.1; }
+  .wk-stat small { display: block; margin-top: 2px; font-size: 10.5px; letter-spacing: 0.04em; color: #9fd9f3; }
+
+  .wk-cta {
+    position: relative; overflow: hidden;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 13px 18px; border: 0; cursor: pointer;
+    border-radius: 14px; font-size: 14px; font-weight: 800; color: #003c69;
+    background: linear-gradient(135deg, #ffffff, #dff2fc);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .wk-cta::after {
+    content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(0, 181, 241, 0.35), transparent);
+    transform: skewX(-20deg); animation: wkShine 3.6s ease-in-out infinite;
+  }
+  @keyframes wkShine { 0% { left: -60%; } 60%, 100% { left: 130%; } }
+  .wk-cta:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(0, 0, 0, 0.35); }
+  .wk-cta i { color: #00b5f1; }
+
+  @media (max-width: 480px) {
+    .wk-dot { width: 30px; height: 30px; }
+    .wk-dot span { margin: 9px; }
+    .wk-pin { width: 42px; height: 42px; }
+    .wk-pin .core { inset: 9px; font-size: 11px; }
+    .wk-pin .tag { font-size: 10px; padding: 6px 9px; }
+    .wk-tab { padding: 7px 14px; font-size: 12px; }
+    .wk-side { padding: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wk-stage, .wk-dot span, .wk-pin .ring, .wk-pin .tag, .wk-hint, .wk-inner::before, .wk-cta::after { animation: none; }
+    .wk-tilt { transition: none; }
+  }
+
+  /* ---- Modal lokasi kantor ---- */
+  .wk-modal {
+    position: fixed; inset: 0; z-index: 9999; display: none;
+    align-items: center; justify-content: center; padding: 16px;
+    background: rgba(0, 28, 56, 0.78);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    opacity: 0; transition: opacity 0.3s ease;
+  }
+  .wk-modal.open { display: flex; }
+  .wk-modal.show { opacity: 1; }
+  .wk-modal-box {
+    width: 100%; max-width: 1000px; height: 80vh;
+    display: flex; flex-direction: column; overflow: hidden;
+    background: #ffffff; border-radius: 22px;
+    box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.65);
+    transform: translateY(24px) scale(0.97);
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .wk-modal.show .wk-modal-box { transform: none; }
+  .wk-modal-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 16px 20px; color: #ffffff;
+    background: linear-gradient(135deg, #00508c, #003c69);
+    border-bottom: 3px solid #00b5f1;
+  }
+  .wk-modal-head h3 { margin: 0; font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+  .wk-modal-head h3 i { color: #00b5f1; }
+  .wk-modal-close {
+    width: 38px; height: 38px; flex-shrink: 0; border-radius: 50%; cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.1);
+    color: #ffffff; font-size: 22px; line-height: 1; transition: 0.25s ease;
+  }
+  .wk-modal-close:hover { background: #ffffff; color: #003c69; transform: rotate(90deg); }
+  .wk-modal-body { flex: 1 1 auto; width: 100%; background: #e9f5fc; }
+  .wk-modal-foot {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
+    padding: 14px 16px; background: linear-gradient(180deg, #ffffff, #eef7fd); border-top: 1px solid rgba(0, 60, 105, 0.12);
+  }
+  .wk-btn {
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none; cursor: pointer;
+    padding: 10px 22px; border-radius: 12px; font-size: 14px; font-weight: 700; transition: 0.25s ease;
+  }
+  .wk-btn-primary { background: linear-gradient(135deg, #00b5f1, #2577B4); color: #ffffff; border: 0; box-shadow: 0 8px 18px rgba(0, 120, 190, 0.35); }
+  .wk-btn-primary:hover { background: linear-gradient(135deg, #00508c, #003c69); transform: translateY(-2px); }
+  .wk-btn-ghost { background: #ffffff; color: #003c69; border: 1px solid rgba(0, 60, 105, 0.25); }
+  .wk-btn-ghost:hover { background: #003c69; color: #ffffff; }
+
   /* ================= TICKER PENGUMUMAN ================= */
   .ticker-wrap { background: #00b5f1; color: #fff; padding: 8px 0; overflow: hidden; }
   .ticker-inner { display: flex; align-items: center; gap: 12px; padding: 0 16px; }
@@ -102,194 +382,7 @@
   .layanan-card:hover .layanan-title { color: #fff; }
   @media (min-width: 768px) { .layanan-title { font-size: 0.95rem; } .layanan-icon { width: 60px; height: 60px; font-size: 22px; } }
 
-  /* ================= PETA INTERAKTIF NTB ================= */
-  #map { z-index: 0; position: absolute; inset: 0; width: 100%; height: 100%; }
-
-  .ntb-card {
-    border-radius: 20px;
-    overflow: hidden;
-    background: #fff;
-    border: 1px solid rgba(0, 60, 105, 0.12);
-    box-shadow: 0 14px 40px rgba(0, 60, 105, 0.16);
-  }
-
-  .ntb-stage { display: grid; position: relative; }
-  .ntb-view {
-    grid-area: 1 / 1;
-    transition: opacity 0.6s ease, transform 0.8s ease, visibility 0.6s ease;
-    opacity: 1;
-    visibility: visible;
-  }
-  .ntb-view.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-  .ntb-view-peta.is-hidden { transform: scale(1.35); }
-  .ntb-view-lokasi.is-hidden { transform: scale(0.96); }
-
-  /* ---- Tampilan 1: peta NTB (gambar) ---- */
-  .ntb-view-peta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    min-height: 320px;
-    background:
-      radial-gradient(circle at 15% 60%, rgba(0, 181, 241, 0.25), transparent 45%),
-      repeating-linear-gradient(0deg, rgba(0, 60, 105, 0.05) 0 1px, transparent 1px 38px),
-      repeating-linear-gradient(90deg, rgba(0, 60, 105, 0.05) 0 1px, transparent 1px 38px),
-      linear-gradient(135deg, #eaf6fd, #cfe9f8);
-  }
-  .ntb-mapbox {
-    position: relative;
-    width: 100%;
-    max-width: 920px;
-    aspect-ratio: 768 / 342;
-    animation: floatKabalmon 6s ease-in-out infinite;
-  }
-  .ntb-mapbox > img { width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; }
-
-  /* Titik wilayah */
-  .ntb-dot {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    width: 24px; height: 24px;
-    padding: 0; border: 0; background: transparent;
-    cursor: pointer; z-index: 3;
-  }
-  .ntb-dot span {
-    display: block; width: 12px; height: 12px; margin: 6px;
-    border-radius: 50%;
-    background: #003c69;
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 0 rgba(0, 181, 241, 0.6);
-    animation: dotPing 2.6s infinite;
-    transition: transform 0.25s ease, background 0.25s ease;
-  }
-  .ntb-dot:hover span, .ntb-dot:focus-visible span, .ntb-dot.active span { background: #00b5f1; transform: scale(1.4); }
-  .ntb-dot:focus-visible { outline: 2px solid #00b5f1; outline-offset: 2px; border-radius: 50%; }
-  .ntb-dot::after {
-    content: attr(data-name);
-    position: absolute; bottom: 130%; left: 50%;
-    transform: translateX(-50%) translateY(4px);
-    background: #003c69; color: #fff;
-    font-size: 11px; font-weight: 700; line-height: 1;
-    padding: 5px 9px; border-radius: 6px; white-space: nowrap;
-    opacity: 0; pointer-events: none; transition: 0.2s ease;
-    box-shadow: 0 6px 14px rgba(0, 60, 105, 0.3);
-  }
-  .ntb-dot:hover::after, .ntb-dot:focus-visible::after, .ntb-dot.active::after {
-    opacity: 1; transform: translateX(-50%) translateY(0);
-  }
-  @keyframes dotPing {
-    0%   { box-shadow: 0 0 0 0 rgba(0, 181, 241, 0.55); }
-    70%  { box-shadow: 0 0 0 10px rgba(0, 181, 241, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(0, 181, 241, 0); }
-  }
-
-  /* Pin Balmon Mataram (gelombang frekuensi) */
-  .balmon-pin {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    width: 46px; height: 46px;
-    padding: 0; border: 0; background: transparent;
-    cursor: pointer; z-index: 6;
-  }
-  .balmon-pin .ring {
-    position: absolute; inset: 0; border-radius: 50%;
-    border: 2px solid rgba(0, 181, 241, 0.95);
-    box-shadow: 0 0 12px rgba(0, 200, 255, 0.7);
-    animation: gelombangFrekuensi 2.6s ease-out infinite;
-    pointer-events: none;
-  }
-  .balmon-pin .ring.r2 { animation-delay: 1.3s; }
-  .balmon-pin .core {
-    position: absolute; inset: 9px; border-radius: 50%;
-    background: linear-gradient(135deg, #00b5f1, #003c69);
-    color: #fff; font-size: 13px;
-    display: flex; align-items: center; justify-content: center;
-    border: 2px solid #fff;
-    box-shadow: 0 4px 12px rgba(0, 60, 105, 0.5);
-    transition: transform 0.25s ease;
-  }
-  .balmon-pin:hover .core, .balmon-pin:focus-visible .core { transform: scale(1.2); }
-  .balmon-pin:focus-visible { outline: 2px solid #003c69; outline-offset: 3px; border-radius: 50%; }
-  .balmon-pin .tag {
-    position: absolute; left: -8px; bottom: calc(100% + 4px);
-    background: #003c69; color: #fff;
-    font-size: 11px; font-weight: 700; line-height: 1;
-    padding: 6px 10px; border-radius: 999px; white-space: nowrap;
-    box-shadow: 0 6px 14px rgba(0, 60, 105, 0.35);
-    animation: tagBob 2s ease-in-out infinite;
-  }
-  .balmon-pin .tag::after {
-    content: ""; position: absolute; left: 16px; top: 100%;
-    border: 5px solid transparent; border-top-color: #003c69;
-  }
-  @keyframes tagBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-
-  /* ---- Tampilan 2: peta detail Leaflet ---- */
-  .ntb-view-lokasi { position: relative; min-height: 320px; background: #dfeaf2; }
-  .ntb-back, .ntb-gmaps {
-    position: absolute; z-index: 1001;
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 8px 14px; border-radius: 999px;
-    font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none;
-    box-shadow: 0 6px 16px rgba(0, 60, 105, 0.3);
-    transition: 0.25s ease;
-  }
-  .ntb-back { top: 12px; left: 12px; background: #003c69; color: #fff; border: 0; }
-  .ntb-back:hover { background: #00b5f1; }
-  .ntb-gmaps { bottom: 22px; left: 12px; background: #fff; color: #003c69; }
-  .ntb-gmaps:hover { background: #00b5f1; color: #fff; }
-
-  /* Marker Balmon di Leaflet */
-  .balmon-leaflet-pin { position: relative; }
-  .balmon-leaflet-pin .bl-pulse {
-    position: absolute; inset: 0; border-radius: 50%;
-    border: 2px solid rgba(0, 181, 241, 0.9);
-    animation: gelombangFrekuensi 2.4s ease-out infinite;
-  }
-  .balmon-leaflet-pin .bl-core {
-    position: absolute; inset: 8px; border-radius: 50%;
-    background: linear-gradient(135deg, #00b5f1, #003c69);
-    color: #fff; font-size: 14px; border: 2px solid #fff;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 60, 105, 0.55);
-  }
-
-  /* ---- Info bar ---- */
-  .ntb-infobar {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-    gap: 12px; padding: 14px 18px;
-    background: #003c69; color: #fff;
-  }
-  .ntb-info-text { display: flex; align-items: center; gap: 10px; font-size: 14px; line-height: 1.4; min-width: 0; }
-  .ntb-info-text i { color: #00b5f1; font-size: 18px; flex-shrink: 0; }
-  .ntb-cta {
-    background: #00b5f1; color: #fff; border: 0; cursor: pointer;
-    padding: 9px 18px; border-radius: 999px;
-    font-size: 13px; font-weight: 700; white-space: nowrap;
-    transition: 0.25s ease;
-  }
-  .ntb-cta:hover { background: #fff; color: #003c69; }
-
-  @media (min-width: 768px) {
-    .ntb-view-peta { padding: 24px; min-height: 460px; }
-    .ntb-view-lokasi { min-height: 480px; }
-    .balmon-pin .tag { font-size: 12px; }
-  }
-  @media (max-width: 480px) {
-    .ntb-dot { width: 28px; height: 28px; }
-    .balmon-pin { width: 40px; height: 40px; }
-    .balmon-pin .core { inset: 8px; font-size: 11px; }
-    .balmon-pin .tag { font-size: 10px; padding: 5px 8px; }
-    .ntb-info-text { font-size: 13px; }
-    .ntb-cta { width: 100%; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .ntb-mapbox, .ntb-dot span, .balmon-pin .ring, .balmon-pin .tag, .balmon-leaflet-pin .bl-pulse { animation: none; }
-    .ntb-view { transition: none; }
-  }
-
-  /* ================= INSTAGRAM EMBED (DIPERBAIKI) ================= */
+  /* ================= INSTAGRAM EMBED ================= */
   .igPostSwiper { width: 100%; max-width: 1100px; overflow: hidden; margin: 0 auto; padding: 12px 5px 20px; }
   .igPostSwiper .swiper-slide { height: auto; }
   
@@ -311,18 +404,11 @@
   .ig-post-card:nth-child(3) { animation-delay: 1s; }
   .ig-post-card:hover { animation-play-state: paused; box-shadow: 0 8px 20px rgba(0,60,105,0.18); }
   
-  /* Memaksa iframe/embed IG agar tidak melebar */
-  .ig-post-card .instagram-media { 
-    min-width: 0 !important; 
-    max-width: 100% !important; 
-    width: 100% !important; 
-    margin: 0 auto !important; 
-  }
-
+  .ig-post-card .instagram-media { min-width: 0 !important; max-width: 100% !important; width: 100% !important; margin: 0 auto !important; }
   .ig-pagination { display: flex; justify-content: center; gap: 8px; }
   .ig-pagination .swiper-pagination-bullet { background: #003c69; opacity: 0.4; }
   .ig-pagination .swiper-pagination-bullet-active { background: #00b5f1; opacity: 1; }
-  .ig-prev, .ig-next { background: #003c69; color: white; width: 38px; height: 38px; border-radius: 50%; transition: 0.3s; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;}
+  .ig-prev, .ig-next { background: #003c69; color: white; width: 38px; height: 38px; border-radius: 50%; transition: 0.3s; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .ig-prev:hover, .ig-next:hover { background: #00b5f1; }
   @media (max-width: 640px) { .ig-post-card { padding: 6px; max-width: 100%; } .igPostSwiper { padding: 10px 0 18px; } }
   @media (prefers-reduced-motion: reduce) { .ig-post-card { animation: none; } }
@@ -365,23 +451,160 @@
 </div>
 
 
-<!-- ================= 3. SAMBUTAN KEPALA ================= -->
-<div id="tentang-kami" class="bg-[#003c69] lg:flex lg:p-[80px] md:p-[80px] p-[30px] items-center gap-10 overflow-hidden">
-  <div class="logo lg:w-1/3 w-full flex justify-center mb-8 lg:mb-0 fade-in-left">
-    <div class="kabalmon-wrapper">
-      <img src="{% static 'img/kabalmon.png' %}" class="kabalmon-float w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] object-contain relative z-10 drop-shadow-2xl" alt="Kepala Balmon">
+<!-- ================= 3. SAMBUTAN KEPALA + PETA WILAYAH ================= -->
+<div id="tentang-kami" class="bg-[#003c69] lg:p-[80px] md:p-[50px] p-[30px] overflow-hidden">
+  
+  <!-- Baris Pertama: Foto & Teks Sambutan -->
+  <div class="flex flex-col lg:flex-row items-center gap-10">
+    <div class="logo lg:w-1/3 w-full flex justify-center fade-in-left">
+      <div class="kabalmon-wrapper">
+        <img src="{% static 'img/kabalmon.png' %}" class="kabalmon-float w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] object-contain relative z-10 drop-shadow-2xl" alt="Kepala Balmon">
+      </div>
+    </div>
+    
+    <div class="text lg:w-2/3 w-full text-[#00b0ec] sambutan-text fade-in-right">
+      <h1 class="text-2xl md:text-3xl font-bold text-[#00b0ec]">Sambutan Kepala</h1>
+      <h3 class="text-lg md:text-xl font-semibold text-[#00b0ec] mt-2 mb-4">Balai Monitoring Spektrum Frekuensi Radio Kelas I Mataram</h3>
+      <p class="text-justify text-sm md:text-base leading-relaxed text-[#fff]">
+        Balmon SFR Kelas I Mataram merupakan Unit Pelaksana Teknis di lingkungan
+        Direktorat Jenderal Infrastruktur Digital (DJID), Kementerian Komunikasi
+        dan Digital, yang memiliki tugas melaksanakan pengawasan dan pengendalian
+        di bidang penggunaan spektrum frekuensi radio dan alat/perangkat
+        telekomunikasi di wilayah Nusa Tenggara Barat.
+      </p>
     </div>
   </div>
-  <div class="text lg:w-2/3 w-full text-[#00b0ec] sambutan-text fade-in-right">
-    <h1 class="text-2xl md:text-3xl font-bold text-[#00b0ec]">Sambutan Kepala</h1>
-    <h3 class="text-lg md:text-xl font-semibold text-[#00b0ec] mt-2 mb-4">Balai Monitoring Spektrum Frekuensi Radio Kelas I Mataram</h3>
-    <p class="text-justify text-sm md:text-base leading-relaxed text-[#fff]">
-      Balmon SFR Kelas I Mataram merupakan Unit Pelaksana Teknis di lingkungan
-      Direktorat Jenderal Infrastruktur Digital (DJID), Kementerian Komunikasi
-      dan Digital, yang memiliki tugas melaksanakan pengawasan dan pengendalian
-      di bidang penggunaan spektrum frekuensi radio dan alat/perangkat
-      telekomunikasi di wilayah Nusa Tenggara Barat.
-    </p>
+
+  <!-- Baris Kedua: PETA WILAYAH KERJA INTERAKTIF -->
+  <div class="mt-12 lg:mt-16 relative" id="wilayah-kerja">
+
+    <div class="text-center mb-8 px-2">
+      <span class="wk-eyebrow">Jangkauan Pengawasan</span>
+      <h4 class="wk-title">Wilayah Kerja Kami</h4>
+      <div class="wk-divider"><span></span><i class="fa-solid fa-diamond"></i><span></span></div>
+      <p class="wk-sub">Mencakup 10 Kabupaten/Kota di Pulau Lombok dan Sumbawa.</p>
+    </div>
+
+    <div class="wk-card">
+      <div class="wk-inner">
+
+        <!-- Tab filter pulau -->
+        <div class="wk-tabs" role="tablist" aria-label="Filter pulau">
+          <button type="button" class="wk-tab active" data-filter="all" role="tab"><i class="fa-solid fa-map"></i> Semua Wilayah</button>
+          <button type="button" class="wk-tab" data-filter="lombok" role="tab"><i class="fa-solid fa-location-dot"></i> Pulau Lombok</button>
+          <button type="button" class="wk-tab" data-filter="sumbawa" role="tab"><i class="fa-solid fa-location-dot"></i> Pulau Sumbawa</button>
+        </div>
+
+        <div class="wk-grid">
+
+          <!-- PETA -->
+          <div class="wk-mapwrap" id="wkMapwrap" data-filter="all">
+            <div class="wk-stage">
+              <div class="wk-tilt" id="wkTilt">
+                <div class="wk-mapbox">
+                  <img src="{% static 'img/peta_wilayah2.png' %}" alt="Peta Wilayah Kerja Balmon SFR Kelas I Mataram" draggable="false">
+                  <div class="wk-spot"></div>
+
+                  <!-- Titik wilayah (left/top dalam persen, boleh digeser bila kurang pas) -->
+                  <button type="button" class="wk-dot" style="left:19.5%; top:37%;" data-key="lombok-utara" data-name="Lombok Utara" data-type="Kabupaten" data-island="Lombok" aria-label="Kabupaten Lombok Utara"><span></span></button>
+                  <button type="button" class="wk-dot" style="left:24.5%; top:44%;" data-key="lombok-timur" data-name="Lombok Timur" data-type="Kabupaten" data-island="Lombok" aria-label="Kabupaten Lombok Timur"><span></span></button>
+                  <button type="button" class="wk-dot" style="left:19.3%; top:82%;" data-key="lombok-tengah" data-name="Lombok Tengah" data-type="Kabupaten" data-island="Lombok" aria-label="Kabupaten Lombok Tengah"><span></span></button>
+                  <button type="button" class="wk-dot" style="left:10.4%; top:77%;" data-key="lombok-barat" data-name="Lombok Barat" data-type="Kabupaten" data-island="Lombok" aria-label="Kabupaten Lombok Barat"><span></span></button>
+                  <button type="button" class="wk-dot" style="left:33.6%; top:85%;" data-key="sumbawa-barat" data-name="Sumbawa Barat" data-type="Kabupaten" data-island="Sumbawa" aria-label="Kabupaten Sumbawa Barat"><span></span></button>
+                  <button type="button" class="wk-dot" style="left:45.6%; top:79%;" data-key="sumbawa" data-name="Sumbawa" data-type="Kabupaten" data-island="Sumbawa" aria-label="Kabupaten Sumbawa"><span></span></button>
+                  <button type="button" class="wk-dot" style="left:71%; top:48%;" data-key="dompu" data-name="Dompu" data-type="Kabupaten" data-island="Sumbawa" aria-label="Kabupaten Dompu"><span></span></button>
+                  <button type="button" class="wk-dot" style="left:79.4%; top:75%;" data-key="bima" data-name="Bima" data-type="Kabupaten" data-island="Sumbawa" aria-label="Kabupaten Bima"><span></span></button>
+                  <button type="button" class="wk-dot" style="left:80.5%; top:51%;" data-key="kota-bima" data-name="Kota Bima" data-type="Kota" data-island="Sumbawa" aria-label="Kota Bima"><span></span></button>
+
+                  <!-- PIN BALMON MATARAM (klik = buka lokasi kantor) -->
+                  <button type="button" class="wk-pin" style="left:14.1%; top:60.2%;" data-key="mataram" data-name="Mataram" data-type="Kota" data-island="Lombok" aria-label="Lihat lokasi kantor Balmon Mataram">
+                    <span class="ring"></span><span class="ring r2"></span>
+                    <span class="core"><i class="fa-solid fa-tower-broadcast"></i></span>
+                    <span class="tag">Balmon Mataram</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <p class="wk-hint"><i class="fa-solid fa-hand-pointer mr-1"></i> Klik titik wilayah, atau pin Balmon Mataram untuk melihat lokasi kantor</p>
+          </div>
+
+          <!-- PANEL INFORMASI -->
+          <aside class="wk-side">
+            <div>
+              <div class="wk-side-label mb-2">Informasi Wilayah</div>
+              <div class="wk-info" id="wkInfo" aria-live="polite">
+                <span class="wk-info-tag" id="wkInfoTag"><i class="fa-solid fa-map-location-dot"></i> Nusa Tenggara Barat</span>
+                <h5 id="wkInfoName">Pilih Wilayah</h5>
+                <p id="wkInfoText">Klik titik pada peta atau pilih nama wilayah di bawah untuk melihat detailnya.</p>
+              </div>
+            </div>
+
+            <div>
+              <div class="wk-group-title"><i class="fa-solid fa-location-dot text-[#00b5f1]"></i> Pulau Lombok</div>
+              <div class="wk-chips">
+                <button type="button" class="wk-chip" data-key="mataram" data-name="Mataram" data-type="Kota" data-island="Lombok"><i class="fa-solid fa-tower-broadcast"></i> Mataram</button>
+                <button type="button" class="wk-chip" data-key="lombok-barat" data-name="Lombok Barat" data-type="Kabupaten" data-island="Lombok">Lombok Barat</button>
+                <button type="button" class="wk-chip" data-key="lombok-tengah" data-name="Lombok Tengah" data-type="Kabupaten" data-island="Lombok">Lombok Tengah</button>
+                <button type="button" class="wk-chip" data-key="lombok-timur" data-name="Lombok Timur" data-type="Kabupaten" data-island="Lombok">Lombok Timur</button>
+                <button type="button" class="wk-chip" data-key="lombok-utara" data-name="Lombok Utara" data-type="Kabupaten" data-island="Lombok">Lombok Utara</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="wk-group-title"><i class="fa-solid fa-location-dot text-[#00b5f1]"></i> Pulau Sumbawa</div>
+              <div class="wk-chips">
+                <button type="button" class="wk-chip" data-key="sumbawa-barat" data-name="Sumbawa Barat" data-type="Kabupaten" data-island="Sumbawa">Sumbawa Barat</button>
+                <button type="button" class="wk-chip" data-key="sumbawa" data-name="Sumbawa" data-type="Kabupaten" data-island="Sumbawa">Sumbawa</button>
+                <button type="button" class="wk-chip" data-key="dompu" data-name="Dompu" data-type="Kabupaten" data-island="Sumbawa">Dompu</button>
+                <button type="button" class="wk-chip" data-key="bima" data-name="Bima" data-type="Kabupaten" data-island="Sumbawa">Bima</button>
+                <button type="button" class="wk-chip" data-key="kota-bima" data-name="Kota Bima" data-type="Kota" data-island="Sumbawa">Kota Bima</button>
+              </div>
+            </div>
+
+            <div class="wk-stats">
+              <div class="wk-stat"><b class="wk-count" data-to="10">0</b><small>KAB/KOTA</small></div>
+              <div class="wk-stat"><b class="wk-count" data-to="2">0</b><small>PULAU</small></div>
+              <div class="wk-stat"><b class="wk-count" data-to="1">0</b><small>PROVINSI</small></div>
+            </div>
+
+            <button type="button" class="wk-cta js-open-map"><i class="fa-solid fa-location-crosshairs"></i> Lihat Lokasi Kantor Balmon</button>
+          </aside>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ================= MODAL GOOGLE MAPS (KANTOR) ================= -->
+<div id="petaModal" class="wk-modal" role="dialog" aria-modal="true" aria-labelledby="petaModalTitle">
+  <div class="wk-modal-box">
+    <div class="wk-modal-head">
+      <h3 id="petaModalTitle"><i class="fa-solid fa-location-dot"></i> Lokasi Kantor Balmon SFR Kelas I Mataram</h3>
+      <button id="closeMapBtn" type="button" class="wk-modal-close" aria-label="Tutup">&times;</button>
+    </div>
+
+    <!-- Konten Google Maps (Embed Resmi) -->
+    <div class="wk-modal-body">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3946.225696737038!2d116.0982345!3d-8.5915352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dcdb8b04a4e2cc5%3A0xe3fabfc8f8bc98ac!2sBalai%20Monitor%20SFR%20Kelas%20II%20Mataram!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid" 
+        width="100%" 
+        height="100%" 
+        style="border:0;" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+
+    <div class="wk-modal-foot">
+      <a href="https://www.google.com/maps/dir/?api=1&destination=-8.5915352,116.0982345" target="_blank" rel="noopener noreferrer" class="wk-btn wk-btn-primary">
+        <i class="fa-solid fa-diamond-turn-right"></i> Petunjuk Arah ke Kantor
+      </a>
+      <button type="button" class="wk-btn wk-btn-ghost" id="closeMapBtn2"><i class="fa-solid fa-xmark"></i> Tutup</button>
+    </div>
   </div>
 </div>
 
@@ -395,37 +618,26 @@
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
-      <!-- 1. Izin Amatir Radio & IKRAP -->
       <a href="/layanan/izin-amatir-radio/" class="layanan-card">
         <div class="layanan-icon"><i class="fa-solid fa-file-signature"></i></div>
         <p class="layanan-title leading-tight">Izin Amatir Radio & IKRAP</p>
       </a>
-
-      <!-- 2. Izin Stasiun Radio -->
       <a href="/layanan/izin-stasiun-radio/" class="layanan-card">
         <div class="layanan-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
         <p class="layanan-title leading-tight">Izin Stasiun Radio</p>
       </a>
-
-      <!-- 3. Ujian Negara Amatir Radio -->
       <a href="/layanan/ujian-negara-amatir/" class="layanan-card">
         <div class="layanan-icon"><i class="fa-solid fa-graduation-cap"></i></div>
         <p class="layanan-title leading-tight">Ujian Negara Amatir Radio</p>
       </a>
-
-      <!-- 4. Layanan Pengaduan Masyarakat -->
       <a href="/layanan/layanan-pengaduan/" class="layanan-card">
         <div class="layanan-icon"><i class="fa-solid fa-bullhorn"></i></div>
         <p class="layanan-title leading-tight">Layanan Pengaduan Masyarakat</p>
       </a>
-
-      <!-- 5. Sertifikasi Operator Radio Pelayaran Rakyat (SERENA) -->
       <a href="/layanan/SERENA/" class="layanan-card">
         <div class="layanan-icon"><i class="fa-solid fa-ship"></i></div>
         <p class="layanan-title leading-tight">Sertifikasi Operator Radio (SERENA)</p>
       </a>
-
-      <!-- 6. Sertifikasi Perangkat Telekomunikasi (SIRANI) -->
       <a href="/layanan/SIRANI/" class="layanan-card">
         <div class="layanan-icon"><i class="fa-solid fa-certificate"></i></div>
         <p class="layanan-title leading-tight">Sertifikasi Perangkat Telekomunikasi (SIRANI)</p>
@@ -476,7 +688,7 @@
 </div>
 
 
-<!-- ================= 7. MEDIA INFRASTRUKTUR DIGITAL (DIPERBAIKI) ================= -->
+<!-- ================= 7. MEDIA INFRASTRUKTUR DIGITAL ================= -->
 <div id="infrastruktur" class="lg:p-[80px] md:p-[50px] p-[30px] bg-slate-50">
   
   <div class="infrastruktur-headline text-center mb-10">
@@ -564,7 +776,6 @@
     </div>
   </div>
 
-
   <!-- ================= SLIDER BERITA INFRASTRUKTUR ================= -->
   <div class="swiper mySwiper mt-4 swiper-card">
     <div class="swiper-wrapper">
@@ -592,65 +803,6 @@
         Cek Selengkapnya
       </button>
     </a>
-  </div>
-</div>
-
-
-<!-- ================= 8. PETA LOKASI (INTERAKTIF) ================= -->
-<div id="lokasi" class="bg-white py-10 md:py-14 px-4 md:px-6">
-  <div class="max-w-6xl mx-auto">
-    <div class="text-center mb-8">
-      <h2 class="text-xl md:text-2xl font-bold text-[#003c69]">LOKASI KANTOR</h2>
-      <div class="w-[50px] h-[4px] bg-[#00b5f1] mx-auto mt-2 rounded"></div>
-      <p class="text-sm text-gray-500 mt-3">Klik pin <b class="text-[#003c69]">Balmon Mataram</b> pada peta Nusa Tenggara Barat untuk melihat lokasi kantor.</p>
-    </div>
-
-    <div class="ntb-card">
-      <div class="ntb-stage" id="ntbStage">
-
-        <!-- TAMPILAN 1: PETA NTB -->
-        <div class="ntb-view ntb-view-peta" id="ntbPeta">
-          <div class="ntb-mapbox">
-            <img src="{% static 'img/peta_wilayah.png' %}" alt="Peta wilayah Nusa Tenggara Barat" draggable="false">
-
-            <!-- Titik wilayah (left/top dalam persen, bisa digeser bila perlu) -->
-            <button type="button" class="ntb-dot" style="left:19.5%; top:37%;" data-name="Lombok Utara" data-type="Kabupaten" aria-label="Kabupaten Lombok Utara"><span></span></button>
-            <button type="button" class="ntb-dot" style="left:24.5%; top:44%;" data-name="Lombok Timur" data-type="Kabupaten" aria-label="Kabupaten Lombok Timur"><span></span></button>
-            <button type="button" class="ntb-dot" style="left:19.3%; top:82%;" data-name="Lombok Tengah" data-type="Kabupaten" aria-label="Kabupaten Lombok Tengah"><span></span></button>
-            <button type="button" class="ntb-dot" style="left:10.4%; top:77%;" data-name="Lombok Barat" data-type="Kabupaten" aria-label="Kabupaten Lombok Barat"><span></span></button>
-            <button type="button" class="ntb-dot" style="left:33.6%; top:85%;" data-name="Sumbawa Barat" data-type="Kabupaten" aria-label="Kabupaten Sumbawa Barat"><span></span></button>
-            <button type="button" class="ntb-dot" style="left:45.6%; top:79%;" data-name="Sumbawa" data-type="Kabupaten" aria-label="Kabupaten Sumbawa"><span></span></button>
-            <button type="button" class="ntb-dot" style="left:71%; top:48%;" data-name="Dompu" data-type="Kabupaten" aria-label="Kabupaten Dompu"><span></span></button>
-            <button type="button" class="ntb-dot" style="left:79.4%; top:75%;" data-name="Bima" data-type="Kabupaten" aria-label="Kabupaten Bima"><span></span></button>
-            <button type="button" class="ntb-dot" style="left:80.5%; top:51%;" data-name="Kota Bima" data-type="Kota" aria-label="Kota Bima"><span></span></button>
-
-            <!-- PIN BALMON MATARAM -->
-            <button type="button" class="balmon-pin" id="balmonPin" style="left:14.1%; top:60.2%;" aria-label="Lihat lokasi Balmon Mataram">
-              <span class="ring"></span><span class="ring r2"></span>
-              <span class="core"><i class="fa-solid fa-tower-broadcast"></i></span>
-              <span class="tag">Balmon Mataram</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- TAMPILAN 2: PETA DETAIL LOKASI -->
-        <div class="ntb-view ntb-view-lokasi is-hidden" id="ntbLokasi" aria-hidden="true">
-          <div id="map"></div>
-          <button type="button" class="ntb-back" id="ntbBack"><i class="fa-solid fa-arrow-left"></i> Peta NTB</button>
-          <a class="ntb-gmaps" id="ntbGmaps" href="https://www.google.com/maps?q=-8.5833,116.1167" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-location-arrow"></i> Buka di Google Maps</a>
-        </div>
-
-      </div>
-
-      <!-- BAR INFORMASI -->
-      <div class="ntb-infobar">
-        <div class="ntb-info-text">
-          <i class="fa-solid fa-map-location-dot"></i>
-          <span id="ntbInfo">Arahkan atau klik wilayah pada peta. Klik pin Balmon Mataram untuk melihat lokasi kantor.</span>
-        </div>
-        <button type="button" class="ntb-cta" id="ntbCta"><i class="fa-solid fa-tower-broadcast mr-1"></i> Lihat Lokasi Balmon Mataram</button>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -765,7 +917,6 @@
 
 
 {% block script %}
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
 
 <!-- ================= 1. SCRIPT SLIDER BANNER ================= -->
@@ -813,91 +964,177 @@
 <!-- ================= 4. INSTAGRAM EMBED SCRIPT ================= -->
 <script async src="https://www.instagram.com/embed.js" onload="if(window.instgrm){window.instgrm.Embeds.process();}"></script>
 
-<!-- ================= 5. SCRIPT PETA LOKASI (INTERAKTIF) ================= -->
+<!-- ================= 5. SCRIPT PETA WILAYAH INTERAKTIF + MODAL LOKASI ================= -->
 <script>
-  (function () {
-    // Koordinat kantor (sama seperti sebelumnya). Ganti dengan koordinat tepat kantor bila perlu.
-    var BALMON = [-8.5833, 116.1167];
-    var NTB_VIEW = [-8.65, 117.0];
+  document.addEventListener("DOMContentLoaded", function () {
+    var root    = document.getElementById('wilayah-kerja');
+    if (!root) return;
 
-    var stage   = document.getElementById('ntbStage');
-    var viewPeta   = document.getElementById('ntbPeta');
-    var viewLokasi = document.getElementById('ntbLokasi');
-    var info    = document.getElementById('ntbInfo');
-    var infoDefault = info.textContent;
-    var dots    = document.querySelectorAll('.ntb-dot');
-    var pin     = document.getElementById('balmonPin');
-    var cta     = document.getElementById('ntbCta');
-    var back    = document.getElementById('ntbBack');
+    var mapwrap = document.getElementById('wkMapwrap');
+    var tilt    = document.getElementById('wkTilt');
+    var items   = root.querySelectorAll('[data-key]');
+    var tabs    = root.querySelectorAll('.wk-tab');
+    var infoBox = document.getElementById('wkInfo');
+    var infoTag = document.getElementById('wkInfoTag');
+    var infoName = document.getElementById('wkInfoName');
+    var infoText = document.getElementById('wkInfoText');
 
-    // ---------- Peta Leaflet ----------
-    var map = L.map('map', { scrollWheelZoom: false }).setView(NTB_VIEW, 8);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    var current = null;
+    var filter  = 'all';
 
-    var icon = L.divIcon({
-      className: 'balmon-leaflet-pin',
-      html: '<div class="bl-pulse"></div><div class="bl-core"><i class="fa-solid fa-tower-broadcast"></i></div>',
-      iconSize: [46, 46],
-      iconAnchor: [23, 23],
-      popupAnchor: [0, -26]
+    /* ---------- util ---------- */
+    function each(key, fn) {
+      items.forEach(function (el) { if (el.dataset.key === key) fn(el); });
+    }
+    function dataOf(key) {
+      var found = null;
+      items.forEach(function (el) { if (!found && el.dataset.key === key) found = el.dataset; });
+      return found;
+    }
+    function swap() {
+      infoBox.classList.remove('swap');
+      void infoBox.offsetWidth;
+      infoBox.classList.add('swap');
+    }
+
+    /* ---------- pilih / reset wilayah ---------- */
+    function select(key) {
+      items.forEach(function (el) { el.classList.remove('is-active'); });
+      current = key;
+
+      if (!key) {
+        infoTag.innerHTML = '<i class="fa-solid fa-map-location-dot"></i> Nusa Tenggara Barat';
+        infoName.textContent = 'Pilih Wilayah';
+        infoText.textContent = 'Klik titik pada peta atau pilih nama wilayah di bawah untuk melihat detailnya.';
+        swap();
+        return;
+      }
+
+      each(key, function (el) { el.classList.add('is-active'); });
+      var d = dataOf(key);
+      infoTag.innerHTML = '<i class="fa-solid fa-location-dot"></i> Pulau ' + d.island;
+      infoName.textContent = d.type + ' ' + d.name;
+      if (key === 'mataram') {
+        infoText.textContent = 'Lokasi kantor Balmon SFR Kelas I Mataram. Tekan tombol di bawah untuk membuka lokasi di peta.';
+      } else {
+        infoText.textContent = 'Termasuk dalam wilayah kerja Balmon SFR Kelas I Mataram di Provinsi Nusa Tenggara Barat.';
+      }
+      swap();
+    }
+
+    /* ---------- filter pulau ---------- */
+    function setFilter(f) {
+      filter = f;
+      mapwrap.setAttribute('data-filter', f);
+      tabs.forEach(function (t) { t.classList.toggle('active', t.dataset.filter === f); });
+      items.forEach(function (el) {
+        var match = (f === 'all') || (el.dataset.island.toLowerCase() === f);
+        el.classList.toggle('is-dim', !match);
+      });
+      if (current) {
+        var d = dataOf(current);
+        if (d && f !== 'all' && d.island.toLowerCase() !== f) select(null);
+      }
+    }
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () { setFilter(t.dataset.filter); });
     });
-    var marker = L.marker(BALMON, { icon: icon }).addTo(map)
-      .bindPopup('<b>Balmon SFR Kelas I Mataram</b><br>Nusa Tenggara Barat');
 
-    var timers = [];
-    function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+    /* ---------- modal lokasi kantor ---------- */
+    var modal     = document.getElementById('petaModal');
+    var closeBtn  = document.getElementById('closeMapBtn');
+    var closeBtn2 = document.getElementById('closeMapBtn2');
+    var lastFocus = null;
 
-    function showLokasi() {
-      clearTimers();
-      viewPeta.classList.add('is-hidden');
-      viewPeta.setAttribute('aria-hidden', 'true');
-      viewLokasi.classList.remove('is-hidden');
-      viewLokasi.setAttribute('aria-hidden', 'false');
-      info.textContent = 'Balmon SFR Kelas I Mataram, Nusa Tenggara Barat.';
-      cta.style.display = 'none';
-
-      timers.push(setTimeout(function () {
-        map.invalidateSize();
-        map.flyTo(BALMON, 16, { duration: 2.2 });
-        timers.push(setTimeout(function () { marker.openPopup(); }, 2400));
-      }, 450));
+    function openModal() {
+      lastFocus = document.activeElement;
+      modal.classList.add('open');
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { modal.classList.add('show'); });
+      });
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
     }
-
-    function showPeta() {
-      clearTimers();
-      map.closePopup();
-      viewLokasi.classList.add('is-hidden');
-      viewLokasi.setAttribute('aria-hidden', 'true');
-      viewPeta.classList.remove('is-hidden');
-      viewPeta.setAttribute('aria-hidden', 'false');
-      info.textContent = infoDefault;
-      cta.style.display = '';
-      timers.push(setTimeout(function () { map.setView(NTB_VIEW, 8, { animate: false }); }, 700));
+    function closeModal() {
+      modal.classList.remove('show');
+      setTimeout(function () { modal.classList.remove('open'); }, 300);
+      document.body.style.overflow = '';
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
     }
-
-    pin.addEventListener('click', showLokasi);
-    cta.addEventListener('click', showLokasi);
-    back.addEventListener('click', showPeta);
-
-    // ---------- Titik wilayah ----------
-    function setActive(el) {
-      dots.forEach(function (d) { d.classList.remove('active'); });
-      if (el) el.classList.add('active');
-    }
-    function describe(el) {
-      info.textContent = el.dataset.type + ' ' + el.dataset.name + ', Provinsi Nusa Tenggara Barat';
-    }
-    dots.forEach(function (d) {
-      d.addEventListener('mouseenter', function () { setActive(d); describe(d); });
-      d.addEventListener('focus', function () { setActive(d); describe(d); });
-      d.addEventListener('click', function () { setActive(d); describe(d); });
-      d.addEventListener('mouseleave', function () { setActive(null); info.textContent = infoDefault; });
+    closeBtn.addEventListener('click', closeModal);
+    closeBtn2.addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
     });
-    pin.addEventListener('mouseenter', function () { info.textContent = 'Kota Mataram: Balmon SFR Kelas I Mataram. Klik untuk melihat lokasi.'; });
-    pin.addEventListener('mouseleave', function () { info.textContent = infoDefault; });
-  })();
+    root.querySelectorAll('.js-open-map').forEach(function (b) {
+      b.addEventListener('click', function () { select('mataram'); openModal(); });
+    });
+
+    /* ---------- interaksi titik, pin, dan chip ---------- */
+    items.forEach(function (el) {
+      var key = el.dataset.key;
+      var isPin = el.classList.contains('wk-pin');
+
+      el.addEventListener('mouseenter', function () { each(key, function (x) { x.classList.add('is-hover'); }); });
+      el.addEventListener('mouseleave', function () { each(key, function (x) { x.classList.remove('is-hover'); }); });
+      el.addEventListener('focus',      function () { each(key, function (x) { x.classList.add('is-hover'); }); });
+      el.addEventListener('blur',       function () { each(key, function (x) { x.classList.remove('is-hover'); }); });
+
+      el.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (isPin) {            // pin Balmon: tampilkan info + buka lokasi kantor
+          select('mataram');
+          openModal();
+        } else {
+          select(current === key ? null : key);
+        }
+      });
+    });
+
+    /* klik area kosong peta = reset pilihan */
+    mapwrap.addEventListener('click', function (e) {
+      if (!e.target.closest('[data-key]')) select(null);
+    });
+
+    /* ---------- efek miring 3D mengikuti kursor (desktop) ---------- */
+    var fine   = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (fine && !reduce && tilt) {
+      mapwrap.addEventListener('pointermove', function (e) {
+        var r = mapwrap.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width - 0.5;
+        var y = (e.clientY - r.top) / r.height - 0.5;
+        tilt.style.transform = 'rotateY(' + (x * 6).toFixed(2) + 'deg) rotateX(' + (-y * 5).toFixed(2) + 'deg)';
+      });
+      mapwrap.addEventListener('pointerleave', function () { tilt.style.transform = ''; });
+    }
+
+    /* ---------- hitung angka statistik saat terlihat ---------- */
+    var counters = root.querySelectorAll('.wk-count');
+    function runCount(el) {
+      var to = parseInt(el.dataset.to, 10) || 0;
+      if (reduce) { el.textContent = to; return; }
+      var start = null, dur = 1200;
+      function step(ts) {
+        if (!start) start = ts;
+        var p = Math.min((ts - start) / dur, 1);
+        el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { runCount(en.target); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.4 });
+      counters.forEach(function (c) { io.observe(c); });
+    } else {
+      counters.forEach(runCount);
+    }
+  });
 </script>
 
 <!-- ================= SCRIPT NAVBAR MOBILE ================= -->
