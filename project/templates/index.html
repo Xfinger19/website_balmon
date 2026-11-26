@@ -109,12 +109,22 @@
     box-shadow: 0 34px 70px -24px rgba(0, 18, 40, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.55) inset;
   }
   .wk-card::before {
-    content: ""; position: absolute; inset: 0; border-radius: 26px; padding: 1.5px;
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 26px;
+    padding: 1.5px;
     background: linear-gradient(135deg, #00b5f1, #ffffff 35%, #2577B4 65%, #00b5f1);
+
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+
     pointer-events: none;
-  }
+}
+  
   .wk-inner { position: relative; border-radius: 18px; overflow: hidden; background: #f6fbff; }
   .wk-inner::before {
     content: ""; position: absolute; top: 0; left: -40%; width: 40%; height: 3px; z-index: 5;
